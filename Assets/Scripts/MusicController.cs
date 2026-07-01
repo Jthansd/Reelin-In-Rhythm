@@ -1,4 +1,5 @@
 using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -13,6 +14,9 @@ public class MusicController : MonoBehaviour
 
     public static MusicController Instance { get; private set; }
 
+    public event Action OnSongFinished;
+
+
 
     private void Awake()
     {
@@ -21,6 +25,14 @@ public class MusicController : MonoBehaviour
         audioSource = gameObject.AddComponent<AudioSource>();
         audioSource.clip = musicClip;
         audioSource.playOnAwake = false;
+    }
+
+    private void Update()
+    {
+        if (audioSource.isPlaying == false && audioSource.time > 0f)
+        {
+            OnSongFinished?.Invoke();
+        }
     }
 
 
@@ -45,4 +57,7 @@ public class MusicController : MonoBehaviour
     {
         return audioSource.time;
     }
+
+   
+
 }

@@ -123,7 +123,7 @@ public class FishingController : MonoBehaviour
     private IEnumerator ReelingRoutine()
     {
         reelWheel.StartReelWheel();
-        yield return new WaitUntil(reelWheel.IsCaught);
+        yield return new WaitUntil(() => reelWheel.isCaught);
         fisherman.Reel();
     }
 
