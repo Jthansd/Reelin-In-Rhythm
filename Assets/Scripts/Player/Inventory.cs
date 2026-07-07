@@ -77,4 +77,9 @@ public class Inventory : MonoBehaviour
         }
         return false;
     }
+
+    public void NotifyInventoryChanged()
+    {
+        OnInventoryChanged?.Invoke();
+    }
 }

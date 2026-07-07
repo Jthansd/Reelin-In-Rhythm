@@ -1,34 +1,27 @@
-using System;
 using UnityEngine;
 
 public class MovementController : MonoBehaviour
 {
-    Rigidbody rb;
-    [SerializeField] public float acceleration = 10f;
-    Vector2 moveInput;
+    CharacterController controller;
+
+    [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private float rotationSpeed = 5f;
-    [SerializeField] private float maxVelocity = 10f;
+    [SerializeField] private float gravity = -20f;
+    [SerializeField] private float groundedStickForce = -2f;
+
+    private Vector2 moveInput;
+    private float verticalVelocity;
 
     void Start()
     {
-        rb = GetComponent<Rigidbody>();
+        controller = GetComponent<CharacterController>();
     }
 
-    void FixedUpdate()
+    void Update()
     {
+        ApplyGravity();
         ApplyMovement();
-        ClampVelocity();
         ApplyRotation();
-
-        //Vector3 raw = new Vector3(moveInput.x, 0f, moveInput.y);
-        //Vector3 projected = ProjectOnSlope(raw);
-
-        //Debug.DrawRay(transform.position, raw * 100f, Color.red);
-        //Debug.DrawRay(transform.position, projected * 100f, Color.green);
-
-
-        // Grounding force
-        //rb.AddForce(Vector3.down * 20f, ForceMode.Acceleration);
     }
 
     public void Move(Vector2 move)
@@ -36,58 +29,47 @@ public class MovementController : MonoBehaviour
         moveInput = move;
     }
 
-    private Vector3 ProjectOnSlope(Vector3 direction)
-    {
-        if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, 1.2f))
-        {
-            Debug.Log("Slope normal: " + hit.normal);
-            return Vector3.ProjectOnPlane(direction, hit.normal).normalized;
-        }
-
-
-
-        return direction;
-    }
-
     private void ApplyMovement()
     {
-        Vector3 movement = new Vector3(moveInput.x, 0f, moveInput.y);
+        Vector3 moveDir = new Vector3(moveInput.x, 0f, moveInput.y);
+        moveDir = Vector3.ClampMagnitude(moveDir, 1f); // prevent diagonal speed boost
 
-        if (movement.sqrMagnitude > 0.01f)
+        Vector3 velocity = moveDir * moveSpeed;
+        velocity.y = verticalVelocity;
+
+        controller.Move(velocity * Time.deltaTime);
+    }
+
+    private void ApplyGravity()
+    {
+        if (controller.isGrounded)
         {
-            movement = ProjectOnSlope(movement);
-            rb.AddForce(movement * acceleration, ForceMode.Acceleration);
+            // small constant downward force keeps the controller "stuck" to slopes
+            verticalVelocity = groundedStickForce;
+        }
+        else
+        {
+            verticalVelocity += gravity * Time.deltaTime;
         }
     }
 
-    void ApplyRotation()
+    private void ApplyRotation()
     {
         Vector3 direction = new Vector3(moveInput.x, 0f, moveInput.y);
-        if (direction.magnitude > 0.5f)
+        if (direction.magnitude > 0.1f)
         {
             Quaternion targetRotation = Quaternion.LookRotation(direction, Vector3.up);
             transform.rotation = Quaternion.Slerp(
                 transform.rotation,
                 targetRotation,
-                rotationSpeed * Time.fixedDeltaTime
+                rotationSpeed * Time.deltaTime
             );
         }
     }
 
     public float GetHorizontalSpeedPercent()
     {
-        Vector3 horizontalVelocity = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
-        return Mathf.Clamp01(horizontalVelocity.magnitude / maxVelocity);
-    }
-
-    void ClampVelocity()
-    {
-        Vector3 horizontalVelocity = new Vector3(rb.linearVelocity.x, 0f, rb.linearVelocity.z);
-
-        if (horizontalVelocity.magnitude > maxVelocity)
-        {
-            horizontalVelocity = horizontalVelocity.normalized * maxVelocity;
-            rb.linearVelocity = new Vector3(horizontalVelocity.x, rb.linearVelocity.y, horizontalVelocity.z);
-        }
+        Vector3 horizontalVelocity = new Vector3(controller.velocity.x, 0f, controller.velocity.z);
+        return Mathf.Clamp01(horizontalVelocity.magnitude / moveSpeed);
     }
 }

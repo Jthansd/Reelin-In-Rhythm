@@ -16,3 +16,5 @@ MonoBehaviour:
   itemDescription: Bass... Get it?
   itemType: Fish
   icon: {fileID: 21300000, guid: 57c32191532a2624c8001b4fc8711a72, type: 3}
+  itemID: bbfe854e-154f-4820-960d-e3c7f596db3a
+  itemValue: 5

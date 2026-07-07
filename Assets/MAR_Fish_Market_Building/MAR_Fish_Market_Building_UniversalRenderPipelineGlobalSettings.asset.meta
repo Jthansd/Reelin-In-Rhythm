@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 554ab2980e7450b4fb03cc4b856a0b30
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 11400000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 373778
+  packageName: MAR - Fish Market Building
+  packageVersion: 1.0
+  assetPath: Assets/MAR_Fish_Market_Building/MAR_Fish_Market_Building_UniversalRenderPipelineGlobalSettings.asset
+  uploadId: 910952

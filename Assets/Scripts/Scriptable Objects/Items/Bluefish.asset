@@ -16,3 +16,5 @@ MonoBehaviour:
   itemDescription: The fish... its blue.
   itemType: Fish
   icon: {fileID: 21300000, guid: 6433a417b025801409eaedca3b65c357, type: 3}
+  itemID: 790528a7-7100-4380-82d5-58ac85b564d9
+  itemValue: 5
