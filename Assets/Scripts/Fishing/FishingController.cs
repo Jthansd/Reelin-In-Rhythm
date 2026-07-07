@@ -26,6 +26,10 @@ public class FishingController : MonoBehaviour
 
     [SerializeField] MusicController musicController;
 
+    [SerializeField] Inventory playerInventory;
+
+    [SerializeField] FishingReward fishingReward;
+
     private void Update()
     {
         UpdateLine();
@@ -145,6 +149,10 @@ public class FishingController : MonoBehaviour
 
         Debug.Log("You caught a fish!" + $" It was a {fish.FishName}. {fish.Description}");
         musicController.StopMusic();
+
+        // Add the fish to the player's inventory
+        playerInventory.AddItem(fishingReward.GetRandomReward());
+
     }
 
     private void ReelIn()

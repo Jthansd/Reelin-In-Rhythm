@@ -6,6 +6,7 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] MovementController movementController;
     [SerializeField] Fisherman fisherman;
+    [SerializeField] InventoryManager inventoryManager;
 
 
     private void Awake()
@@ -23,6 +24,12 @@ public class PlayerController : MonoBehaviour
     {
         Debug.Log("Cast Triggered");
         fisherman.Cast();
+    }
+
+    private void OnToggleInventory()
+    {
+        Debug.Log("Inventory Toggle Triggered");
+        inventoryManager.ToggleInventory();
     }
 
 }
