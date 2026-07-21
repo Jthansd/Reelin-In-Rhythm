@@ -6,13 +6,14 @@ public class SaveManager : MonoBehaviour
     public static SaveManager Instance { get; private set; }
 
     [SerializeField] private Inventory playerInventory;
-    [SerializeField] private Item[] allItems; // used to look up Item by ID when loading
-
+    [SerializeField] private ItemDatabase allItemsDatabase;
+    private Item[] allItems; // used to look up Item by ID when loading
     private string SavePath => Path.Combine(Application.persistentDataPath, "save.json");
 
     private void Awake()
     {
         Instance = this;
+        allItems = allItemsDatabase.GetAllItems().ToArray();
     }
 
     public void Save()
@@ -58,13 +59,9 @@ public class SaveManager : MonoBehaviour
 
     private Item FindItemByID(string id)
     {
-        foreach (var item in allItems)
-        {
-            if (item.ItemID == id)
-                return item;
-        }
+        return allItemsDatabase.GetItemByID(id); 
 
-        Debug.LogWarning($"Item with ID {id} not found!");
-        return null;
+        //Debug.LogWarning($"Item with ID {id} not found!");
+        //return null;
     }
 }

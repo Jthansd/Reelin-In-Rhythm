@@ -4,11 +4,12 @@ using UnityEngine;
 
 public class FishingReward : MonoBehaviour
 {
-    [SerializeField] public List<Item> possibleRewards;
-    
+    [SerializeField] private ItemDatabase itemDatabase;
+
 
     public Item GetRandomReward()
     {
+        List<Item> possibleRewards = itemDatabase.GetAllItems();
         int randomIndex = Random.Range(0, possibleRewards.Count);
         return possibleRewards[randomIndex];
     }

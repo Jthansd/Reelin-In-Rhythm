@@ -4,20 +4,22 @@ using TMPro;
 
 public class InventoryUI : MonoBehaviour
 {
-    [SerializeField] private Inventory inventory;
+    [SerializeField] private Inventory fromInventory;
     [SerializeField] private Transform slotGrid;
     [SerializeField] private GameObject slotPrefab;
     [SerializeField] private GameObject inventoryPanel;
+    [SerializeField] private InventoryManager inventoryManager;
+    [SerializeField] private Inventory toInventory;
 
     void OnEnable()
     {
-        inventory.OnInventoryChanged += Refresh;
+        fromInventory.OnInventoryChanged += Refresh;
         Refresh();
     }
 
     void OnDisable()
     {
-        inventory.OnInventoryChanged -= Refresh;
+        fromInventory.OnInventoryChanged -= Refresh;
     }
 
     void Refresh()
@@ -25,27 +27,30 @@ public class InventoryUI : MonoBehaviour
         foreach (Transform child in slotGrid)
             Destroy(child.gameObject);
 
-        Debug.Log($"About to loop over {inventory.inventorySlots.Count} slots");
+        Debug.Log($"About to loop over {fromInventory.inventorySlots.Count} slots");
 
-        foreach (var slot in inventory.inventorySlots)
+        foreach (var slot in fromInventory.inventorySlots)
         {
             Debug.Log($"Instantiating slot, item = {slot.item}");
+
             GameObject slotGO = Instantiate(slotPrefab, slotGrid);
+            InventorySlotUI slotUI = slotGO.GetComponent<InventorySlotUI>();
 
-            Image icon = slotGO.transform.Find("ItemIcon").GetComponent<Image>();
-            TextMeshProUGUI qtyText = slotGO.transform.Find("ItemCountText").GetComponent<TextMeshProUGUI>();
+            slotUI.Bind(slot, fromInventory);
+            slotUI.OnSlotClicked += HandleSlotClicked;
+        }
+    }
 
-            if (slot.item != null)
-            {
-                icon.sprite = slot.item.Icon;
-                icon.enabled = true;
-                qtyText.text = slot.itemQuantity > 1 ? slot.itemQuantity.ToString() : "";
-            }
-            else
-            {
-                icon.enabled = false;
-                qtyText.text = "";
-            }
+    private void HandleSlotClicked(InventorySlot slot, Inventory owner)
+    {
+        Debug.Log($"Clicked slot. Item: {(slot.item != null ? slot.item.ItemName : "empty")}, Owner: {owner.name}");
+
+        if (slot.item == null) return;
+
+        // only allow moving from player inventory to shop inventory for now
+        if (owner == fromInventory && fromInventory != toInventory)
+        {
+            inventoryManager.MoveItem(fromInventory, toInventory, slot.item, 1);
         }
     }
 

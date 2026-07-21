@@ -11,6 +11,7 @@ public class Inventory : MonoBehaviour
 
     public event Action OnInventoryChanged;
 
+
     private void Start()
     {
         populateInventory();
@@ -80,6 +81,16 @@ public class Inventory : MonoBehaviour
 
     public void NotifyInventoryChanged()
     {
+        OnInventoryChanged?.Invoke();
+    }
+
+    public void ClearInventory()
+    {
+        foreach (var slot in inventorySlots)
+        {
+            slot.item = null;
+            slot.itemQuantity = 0;
+        }
         OnInventoryChanged?.Invoke();
     }
 }

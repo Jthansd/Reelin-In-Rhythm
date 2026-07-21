@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class InventoryManager : MonoBehaviour
 {
-    [SerializeField] private Inventory playerInventory;
+    [SerializeField] private Inventory inventory;
 
     [SerializeField] private InventoryUI inventoryUI;
 
@@ -21,5 +21,11 @@ public class InventoryManager : MonoBehaviour
         inventoryUI.ToggleInventoryUI();
     }
 
+    public void MoveItem(Inventory from, Inventory to, Item item, int amount)
+    {
+        if (item == null) return;
 
+        from.RemoveItem(item/*, amount*/);
+        to.AddItem(item/*, amount*/);
+    }
 }

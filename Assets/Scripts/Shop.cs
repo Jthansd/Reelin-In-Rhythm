@@ -4,9 +4,11 @@ public class Shop : MonoBehaviour
 {
     [SerializeField] private GameObject shopUI;
     [SerializeField] private Inventory shopInventory;
-    [SerializeField] private InventoryUI inventoryUI;
+    [SerializeField] private Inventory playerInventory; 
+    [SerializeField] private InventoryUI shopInventoryUI;
+    [SerializeField] private InventoryUI playerInventoryUI;
 
-    
+
 
     private void Start()
     {
@@ -15,10 +17,9 @@ public class Shop : MonoBehaviour
 
     public void OpenShop()
     {
-        PopulateInventories();
-        //Debug.Log("Opening shop UI.");
-        //inventoryUI.ToggleInventoryUI();
         shopUI.SetActive(true);
+        //shopInventory.AddItem()
+        
         Debug.Log("Shop opened.");
     }
 
@@ -28,9 +29,18 @@ public class Shop : MonoBehaviour
         Debug.Log("Shop closed.");
     }
 
-    private void PopulateInventories()
+    public void SellItems()
     {
-        Debug.Log("Populating shop inventories.");
+        int totalValue = 0;
+        foreach(var slot in shopInventory.inventorySlots)
+        {
+            if(slot.item != null)
+            {
+                totalValue += slot.item.ItemValue * slot.itemQuantity;
 
+            }
+        }
+        shopInventory.ClearInventory();
+        CurrencyManager.Instance.AwardCurrency(totalValue);
     }
 }

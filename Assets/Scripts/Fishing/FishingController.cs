@@ -30,6 +30,7 @@ public class FishingController : MonoBehaviour
 
     [SerializeField] FishingReward fishingReward;
 
+
     private void Update()
     {
         UpdateLine();
