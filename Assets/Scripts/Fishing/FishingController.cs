@@ -22,7 +22,6 @@ public class FishingController : MonoBehaviour
     private float checkInterval = 2f;
     private int luck = 1;
 
-    [SerializeField] Fish fish;
 
     [SerializeField] MusicController musicController;
 
@@ -148,7 +147,6 @@ public class FishingController : MonoBehaviour
         activeBobber = null;
         activeLine = null;
 
-        Debug.Log("You caught a fish!" + $" It was a {fish.FishName}. {fish.Description}");
         musicController.StopMusic();
 
         // Add the fish to the player's inventory

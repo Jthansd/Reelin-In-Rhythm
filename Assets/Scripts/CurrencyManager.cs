@@ -37,4 +37,16 @@ public class CurrencyManager : MonoBehaviour
         OnCurrencyChanged?.Invoke();
         Debug.Log($"Awarded {amount} currency. New total: {currency}");
     }
+
+    public void SpendCurrency(int amount)
+    {
+        if (amount > currency)
+        {
+            Debug.LogWarning("Not enough currency to spend.");
+            return;
+        }
+        currency -= amount;
+        OnCurrencyChanged?.Invoke();
+        Debug.Log($"Spent {amount} currency. New total: {currency}");
+    }
 }

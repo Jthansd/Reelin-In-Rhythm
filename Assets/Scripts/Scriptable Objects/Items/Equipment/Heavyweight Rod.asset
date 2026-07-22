@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d1c6c6d9464a4ad49ab0c76f3d71f515, type: 3}
+  m_Name: Heavyweight Rod
+  m_EditorClassIdentifier: Assembly-CSharp::Equipment
+  itemName: Heavyweight Rod
+  itemDescription: A rod with some beef to it
+  icon: {fileID: 0}
+  itemID: a402894c-aab4-4502-8fa0-a430c92a53d1
+  equipmentType: 0
+  catchStrengthBonus: 1
+  luckBonus: 0
+  rarityBonus: 0
+  cost: 15

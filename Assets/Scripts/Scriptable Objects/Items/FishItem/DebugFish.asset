@@ -9,12 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dff51dec4ecb2964680f192739ad9009, type: 3}
+  m_Script: {fileID: 11500000, guid: 275f42c22ea186a4e980934ae86f222d, type: 3}
   m_Name: DebugFish
-  m_EditorClassIdentifier: Assembly-CSharp::Item
+  m_EditorClassIdentifier: Assembly-CSharp::FishItem
   itemName: Debug Fish
-  itemDescription: Oops...
-  itemType: Fish
+  itemDescription: oops
   icon: {fileID: 21300000, guid: 53b4f930c46172e40bf93c44e1de0e76, type: 3}
-  itemID: 613c52a2-ef84-4a67-af69-5272fcd5cfe6
-  itemValue: 1
+  itemID: 1f7cb1c9-3eb4-4033-ba56-967ba58f0c7c
+  sellValue: 1
+  rarity: impossible
