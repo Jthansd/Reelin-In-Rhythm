@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Equipment", menuName = "Scriptable Objects/Equipment")]
-public class Equipment : Item
+public class EquipmentItem : Item
 {
     [SerializeField] private EquipmentType equipmentType;
 
@@ -11,7 +11,6 @@ public class Equipment : Item
 
     [SerializeField] private int rarityBonus;
 
-    [SerializeField] private int cost;
 
     public enum EquipmentType
     {
@@ -30,7 +29,6 @@ public class Equipment : Item
 
     public int RarityBonus => rarityBonus;
 
-    public int Cost => cost;
 
 
 }

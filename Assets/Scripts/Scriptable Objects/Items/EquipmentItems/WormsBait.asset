@@ -10,14 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d1c6c6d9464a4ad49ab0c76f3d71f515, type: 3}
-  m_Name: BeginnerRod
-  m_EditorClassIdentifier: Assembly-CSharp::Equipment
-  itemName: BeginnerRod
-  itemDescription: A rod for new fishingpeople
-  icon: {fileID: 0}
-  itemID: a402894c-aab4-4502-8fa0-a430c92a53d1
-  equipmentType: 0
+  m_Name: WormsBait
+  m_EditorClassIdentifier: Assembly-CSharp::EquipmentItem
+  itemName: Worms
+  itemDescription: These little wiggly guys should do the trick
+  icon: {fileID: 21300000, guid: 7cb30df394856d74a81a3ef87972090b, type: 3}
+  itemID: 168ea272-0e0c-4f24-8c9c-20e04806ea48
+  value: 1
+  equipmentType: 2
   catchStrengthBonus: 0
-  luckBonus: 0
+  luckBonus: 1
   rarityBonus: 0
-  cost: 0

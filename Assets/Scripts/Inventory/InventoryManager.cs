@@ -6,15 +6,23 @@ public class InventoryManager : MonoBehaviour
 {
     [SerializeField] private Inventory inventory;
 
-    [SerializeField] private InventoryUI inventoryUI;
-
-    public static InventoryManager Instance { get; internal set; }
+    [SerializeField] private MonoBehaviour inventoryUIObject;
+    private IInventoryUI inventoryUI;
 
     private void Awake()
     {
-        Instance = this;
-
+        inventoryUI = inventoryUIObject as IInventoryUI;
     }
+
+    public Inventory Inventory => inventory;
+
+    //public static InventoryManager Instance { get; internal set; }
+
+    //private void Awake()
+    //{
+    //    Instance = this;
+
+    //}
 
     public void ToggleInventory()
     {
@@ -28,4 +36,6 @@ public class InventoryManager : MonoBehaviour
         from.RemoveItem(item/*, amount*/);
         to.AddItem(item/*, amount*/);
     }
+
+
 }
