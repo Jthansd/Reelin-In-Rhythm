@@ -7,6 +7,11 @@ public class PlayerStats : MonoBehaviour
     [SerializeField] private int luck; //bonus to how often the player will hook a fish
     [SerializeField] private int catchStrength; //reel speed. How fast the player can reel in fish
     [SerializeField] private int rarityStrength; //higher the rarity strength, the rarer the fish the player can hook
+
+    public int Luck => luck;
+    public int CatchStrength => catchStrength;
+    public int RarityStrength => rarityStrength;
+
     //public static PlayerStats Instance { get; private set; }
     
     //private void Awake()

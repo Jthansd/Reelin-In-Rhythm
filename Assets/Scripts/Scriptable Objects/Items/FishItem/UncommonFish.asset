@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 275f42c22ea186a4e980934ae86f222d, type: 3}
+  m_Name: UncommonFish
+  m_EditorClassIdentifier: Assembly-CSharp::FishItem
+  itemName: Uncommon Fish
+  itemDescription: The fish... its uncommon
+  icon: {fileID: 21300000, guid: 6433a417b025801409eaedca3b65c357, type: 3}
+  itemID: bd65dae1-a31f-4c07-96b7-a4a30dc42fd7
+  value: 0
+  sellValue: 10
+  rarityType: 1

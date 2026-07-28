@@ -46,6 +46,19 @@ public class ItemDatabase : ScriptableObject
         }
     }
 
+    public List<Item> GetAllItemsOfRarity(FishItem.Rarity rarity)
+    {
+        List<Item> result = new List<Item>();
+        foreach (var item in allItems)
+        {
+            if (item is FishItem fish && fish.rarity == rarity)
+            {
+                result.Add(item);
+            }
+        }
+        return result;
+    }
+
     public List<Item> GetAllItems()
     {
         return allItems;

@@ -4958,6 +4958,9 @@ MonoBehaviour:
   musicController: {fileID: 372676266}
   playerInventory: {fileID: 1047523020}
   fishingReward: {fileID: 1940340345}
+  playerStats: {fileID: 1047523025}
+  playerEquipment: {fileID: 1047523026}
+  rarityConfig: {fileID: 11400000, guid: c7b369b92922e844bbc6fc114a2afd23, type: 2}
 --- !u!4 &1940340344
 Transform:
   m_ObjectHideFlags: 0
@@ -4985,7 +4988,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9fc471a4499c3cf4bbfac8b560169be7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FishingReward
-  itemDatabase: {fileID: 11400000, guid: dc876b1c99b57dc42961640cd26f65ab, type: 2}
+  fishDatabase: {fileID: 11400000, guid: dc876b1c99b57dc42961640cd26f65ab, type: 2}
 --- !u!1 &2037963409
 GameObject:
   m_ObjectHideFlags: 0

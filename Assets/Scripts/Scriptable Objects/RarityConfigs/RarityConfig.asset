@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 90b75522b5ba56c4b94a96582c3564ec, type: 3}
+  m_Name: RarityConfig
+  m_EditorClassIdentifier: Assembly-CSharp::RarityConfig
+  rarityWeights:
+  - rarity: 0
+    unlockThreshold: 0
+    peakStrength: 6
+    spread: 5
+    floorWeight: 0.01
+  - rarity: 1
+    unlockThreshold: 10
+    peakStrength: 19
+    spread: 7.5
+    floorWeight: 0.01
+  - rarity: 2
+    unlockThreshold: 25
+    peakStrength: 40
+    spread: 12.5
+    floorWeight: 0.01
+  - rarity: 3
+    unlockThreshold: 50
+    peakStrength: 65
+    spread: 12.5
+    floorWeight: 0.01
+  - rarity: 4
+    unlockThreshold: 75
+    peakStrength: 90
+    spread: 12.5
+    floorWeight: 0.01

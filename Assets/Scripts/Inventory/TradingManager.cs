@@ -37,4 +37,21 @@ public class TradingManager : MonoBehaviour
         fromInventory = from;
         toInventory = to;
     }
+
+    public void TradeItemStack(Item item, int itemQuantity, Inventory to, Inventory from)
+    {
+        for (int i = 0; i < itemQuantity; i++)
+        {
+            TradeItem(to, from, item);
+        }
+    }
+
+
+    public void TradeItemStack(Item item, int itemQuantity)
+    {
+        for (int i = 0; i < itemQuantity; i++)
+        {
+            TradeItem(item);
+        }
+    }
 }

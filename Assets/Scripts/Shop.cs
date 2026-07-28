@@ -28,16 +28,17 @@ public class Shop : MonoBehaviour
 
     public void SellItems()
     {
+
         int totalValue = 0;
-        foreach (var slot in cartInventory.inventorySlots)
+        foreach (var slot in cartInventory.inventorySlots)//for each item in the cart
         {
-            if (slot.item is FishItem fish)
+            if (slot.item is FishItem fish)//if its a fish
             {
-                totalValue += fish.SellValue * slot.itemQuantity;
+                totalValue += fish.SellValue * slot.itemQuantity; //add it to the sell value
             }
         }
-        cartInventory.ClearInventory();
-        CurrencyManager.Instance.AwardCurrency(totalValue);
+        cartInventory.ClearInventory();//clear the cart
+        CurrencyManager.Instance.AwardCurrency(totalValue);//award money
     }
 
     public void DoTransaction()
@@ -54,40 +55,41 @@ public class Shop : MonoBehaviour
     public void BuyItems()
     {
         int totalCost = 0;
-        foreach (var slot in cartInventory.inventorySlots)
+        foreach (var slot in cartInventory.inventorySlots)//for each item in the cart
         {
-            if (slot.item != null)
+            if (slot.item != null)//if the item is not null
             {
-                totalCost += slot.item.Value * slot.itemQuantity;
+                totalCost += slot.item.Value * slot.itemQuantity;//add the value to the total cost
             }
         }
 
-        if (CurrencyManager.Instance.SpendCurrency(totalCost))
+        if (CurrencyManager.Instance.SpendCurrency(totalCost))//if the player has enough money to spend, spend it
         {
             
-            TradingManager.Instance.SetToAndFrom(playerInventory, cartInventory);
-            foreach (var slot in cartInventory.inventorySlots)
+            TradingManager.Instance.SetToAndFrom(playerInventory, cartInventory);//set the players inventory to receive from the cart
+            foreach (var slot in cartInventory.inventorySlots)//for each item in the cart
             {
-                if (slot.item != null)
+                if (slot.item != null)//if the item is not null
                 {
-                    if(slot.item is EquipmentItem equipmentItem)//it is equipment
+                    if(slot.item is EquipmentItem equipmentItem)//if it is equipment
                     {
                         playerEquipment.EquipItem(equipmentItem);//equip it
-                        if(equipmentItem.getEquipmentType != EquipmentItem.EquipmentType.Bait)//its not bait
+                        if(equipmentItem.getEquipmentType != EquipmentItem.EquipmentType.Bait)//if its not bait
                         {
-                            //do nothing
+                            //do nothing, we remove from cart later
                         }
                         else //it is bait
                         {
-                            //add it to the player's inventory
-                            TradingManager.Instance.TradeItem(slot.item);
+
+                            TradingManager.Instance.TradeItemStack(equipmentItem, slot.itemQuantity);
+                            
                         }
                     }
                     else//its not equipment
                     {
-                        TradingManager.Instance.TradeItem(slot.item); //add it to the player's inventory
+                        TradingManager.Instance.TradeItemStack(slot.item, slot.itemQuantity); //add it to the player's inventory
                     }
-                        
+
 
                 }
             }
