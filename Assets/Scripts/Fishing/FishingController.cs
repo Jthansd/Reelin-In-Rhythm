@@ -24,6 +24,8 @@ public class FishingController : MonoBehaviour
 
     private FishItem currentFish;
 
+    private EquipmentItem currentBait;
+
 
     [SerializeField] MusicController musicController;
 
@@ -37,7 +39,10 @@ public class FishingController : MonoBehaviour
 
     [SerializeField] RarityConfig rarityConfig;
 
-
+    //1. apply bait bonus when player casts
+    //2. Remove bait bonus if player cancels fishing
+    //3. consume the bait when the player hooks a fish
+    //4. Remove the bait bonus when the fishing event is over (player win or player loss)
     private void Update()
     {
         UpdateLine();
@@ -55,6 +60,8 @@ public class FishingController : MonoBehaviour
 
     public void Cast()
     {
+        //1. Apply bait bonus when player casts
+
         // If already fishing, reel in / cancel
         if (bobberInWater || activeBobber != null)
         {
@@ -69,6 +76,8 @@ public class FishingController : MonoBehaviour
         // Apply force
         Rigidbody rb = activeBobber.GetComponent<Rigidbody>();
         rb.linearVelocity = poleTip.forward * castForce;
+
+        ApplyBait();
     }
 
     private void UpdateLine()
@@ -117,7 +126,7 @@ public class FishingController : MonoBehaviour
 
             if (roll == 1)
             {
-                hooked = true;
+                //hooked = true;
                 HandleHookedAction();
             }
         }
@@ -128,13 +137,48 @@ public class FishingController : MonoBehaviour
     private void HandleHookedAction()
     {
         Debug.Log("Fish hooked!");
+        hooked = true;
+        if (playerEquipment.ConsumeBait(out EquipmentItem baitUsed))
+        {
+            currentBait = baitUsed;
+        }
+        else
+        {
+            currentBait = null; // No bait was used
+            Debug.Log("No bait equipped.");
+        }
+
         //get the fish that was hooked
-        if(fishingReward.GetRandomFishWithRarity(DetermineRarity()) is FishItem fish)
+        if (fishingReward.GetRandomFishWithRarity(DetermineRarity()) is FishItem fish)
         {
             currentFish = fish;
         }
+        
         fisherman.StartReeling();
         StartCoroutine(ReelingRoutine());
+    }
+    
+
+    //TODO: Edit this to only apply and consume the bait if a fish is hooked
+    //if the player reels in early we do not consume the bait
+    //also if the player hooks a fish but loses it, bait is consumed
+    private void ApplyBait()
+    {
+        playerEquipment.ApplyBaitBonus();
+
+        //if (playerEquipment.ConsumeBait(out EquipmentItem baitUsed))
+        //{
+        //    Debug.Log("Bait applied to the hooked fish!");
+        //    // Implement any additional logic for bait effects here
+        //    Debug.Log($"Bait used: {baitUsed.name}");
+
+        //    currentBait = baitUsed; // Store the bait used for later reference
+        //}
+        //else
+        //{
+        //    currentBait = null; // No bait was used
+        //    Debug.Log("No bait equipped.");
+        //}
     }
 
 
@@ -199,13 +243,19 @@ public class FishingController : MonoBehaviour
         musicController.StopMusic();
 
         // Add the fish to the player's inventory
-        //TODO: Do not award random fish, get the fish when the player hooks the fish, then award later
+        
         playerInventory.AddItem(currentFish);
+        playerEquipment.RevertBaitBuff(currentBait); // Revert the bait bonus after the fishing event is over
+
 
     }
 
     private void ReelIn()
     {
+        if (hooked)
+        {
+            return; // Don't allow reeling in if a fish is hooked
+        }
         // Player manually reels in early
         bobberInWater = false;
 
@@ -219,5 +269,6 @@ public class FishingController : MonoBehaviour
         activeLine = null;
 
         hooked = false;
+        playerEquipment.RevertBaitBuff(); // Revert the bait bonus if the player cancels fishing
     }
 }

@@ -4,8 +4,7 @@ using UnityEngine.InputSystem;
 
 public class NoteHitManager : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    private List<List<float>> spawnTimes = new List<List<float>>();
+    private List<List<NoteTiming>> spawnTimes = new List<List<NoteTiming>>();
     private int nextNoteIndex = 0;
     private float spawnLeadTime;
     private float hitWindow = 15f;
@@ -18,6 +17,11 @@ public class NoteHitManager : MonoBehaviour
 
     public static NoteHitManager Instance { get; internal set; }
 
+    // Hold-note tracking state
+    private bool isHolding = false;
+    private float holdStartTime = 0f;
+    private GameObject holdingNote = null;
+
     private void Awake()
     {
         Instance = this;
@@ -28,41 +32,29 @@ public class NoteHitManager : MonoBehaviour
         spawnLeadTime = 2f * (60f / reelWheel.bpm);
     }
 
-    // Update is called once per frame
     void Update()
     {
-        checkIsLate();
+        HandleFrontNote();
     }
-
-    
 
     public void SpawnNotesOnTime()
     {
         if (!reelWheel.IsPlaying())
             return;
 
-    
-        //responsible for spawning notes on time based on the list of spawn times
+        List<NoteTiming> easyTimings = spawnTimes[0];
 
-        List<float> easyTimes = spawnTimes[0];
-
-        if (nextNoteIndex >= easyTimes.Count)
+        if (nextNoteIndex >= easyTimings.Count)
             return;
 
-        // Get the current music time from the MusicController
         float currentTime = MusicController.Instance.GetCurrentMusicTime();
-        // Get the next note's hit time
-        float hitTime = easyTimes[nextNoteIndex];
+        NoteTiming nextTiming = easyTimings[nextNoteIndex];
 
-        //Spawn the note if the current time is within the lead time of the hit time
-        if (currentTime >= hitTime - spawnLeadTime)
+        if (currentTime >= nextTiming.hitTime - spawnLeadTime)
         {
-            //spawn note
-            reelWheel.SpawnSingleNote();
-            //move on to the next note
+            reelWheel.SpawnSingleNote(nextTiming);
             nextNoteIndex++;
         }
-        
     }
 
     public void GetSpawnTimes()
@@ -85,33 +77,111 @@ public class NoteHitManager : MonoBehaviour
         activeNotes.Remove(note);
     }
 
+    private void HandleFrontNote()
+    {
+        if (activeNotes.Count == 0) return;
+
+        GameObject front = activeNotes[0];
+        if (front == null)
+        {
+            activeNotes.RemoveAt(0);
+            return;
+        }
+
+        ReelWheelNote noteComp = front.GetComponent<ReelWheelNote>();
+        if (noteComp != null && noteComp.justSpawned)
+            return;
+
+        switch (noteComp.noteType)
+        {
+            case NoteType.Tap:
+                CheckTapInput(front);
+                break;
+            case NoteType.Hold:
+                CheckHoldInput(front, noteComp);
+                break;
+        }
+    }
+
     public void CheckInput()
     {
-        if (!Keyboard.current.spaceKey.wasPressedThisFrame)
-            return;
+        // Tap/Hold handling now lives in HandleFrontNote(), called every frame from this script's own Update().
+    }
 
-        if (activeNotes.Count == 0)
-            return;
-
-        GameObject nextNote = activeNotes[0];
-
-        if (IsNoteInHitWindow(nextNote) == NOTE_RESULTS[0])
+    private void CheckTapInput(GameObject note)
+    {
+        if (Keyboard.current.spaceKey.wasPressedThisFrame)
         {
-            Debug.Log(NOTE_RESULTS[0]);
+            string result = IsNoteInHitWindow(note);
+            if (result == NOTE_RESULTS[0])
+            {
+                Debug.Log(NOTE_RESULTS[0]);
+                reelWheel.UpdateFishDistance(true);
+            }
+            else
+            {
+                Debug.Log("MISS!");
+                reelWheel.UpdateFishDistance(false);
+            }
 
-            // award points, reduce fish distance, etc.
+            UnregisterNote(note);
+            Destroy(note);
+            return;
+        }
 
-            reelWheel.UpdateFishDistance(true);
+        if (IsTooLate(note))
+        {
+            Debug.Log("TOO LATE!");
+            reelWheel.UpdateFishDistance(false);
+            UnregisterNote(note);
+            Destroy(note);
+        }
+    }
+
+    private void CheckHoldInput(GameObject note, ReelWheelNote noteComp)
+    {
+        bool inWindow = IsNoteInHitWindow(note) == NOTE_RESULTS[0];
+        bool spacePressed = Keyboard.current.spaceKey.isPressed;
+
+        if (!isHolding)
+        {
+            if (inWindow && Keyboard.current.spaceKey.wasPressedThisFrame)
+            {
+                isHolding = true;
+                holdStartTime = Time.time;
+                holdingNote = note;
+            }
+            else if (IsTooLate(note))
+            {
+                Debug.Log("MISSED HOLD (never started)");
+                reelWheel.UpdateFishDistance(false);
+                UnregisterNote(note);
+                Destroy(note);
+            }
         }
         else
         {
-            Debug.Log("MISS!");
-            // apply miss penalty
-            reelWheel.UpdateFishDistance(false);
+            if (!spacePressed)
+            {
+                Debug.Log("MISSED HOLD (released early)");
+                reelWheel.UpdateFishDistance(false);
+                EndHold(note);
+            }
+            else if (Time.time - holdStartTime >= noteComp.holdDuration)
+            {
+                Debug.Log("HOLD SUCCESS");
+                reelWheel.UpdateFishDistance(true);
+                EndHold(note);
+            }
         }
+    }
 
-        UnregisterNote(nextNote);
-        Destroy(nextNote);
+    private void EndHold(GameObject note)
+    {
+        isHolding = false;
+        holdingNote = null;
+        UnregisterNote(note);
+        Destroy(note);
     }
 
     private float GetNoteAngle(GameObject note)
@@ -122,22 +192,17 @@ public class NoteHitManager : MonoBehaviour
         float localAngle = Mathf.Atan2(localPos.y, localPos.x) * Mathf.Rad2Deg;
         if (localAngle < 0) localAngle += 360f;
 
-        // Add the wheel's current Z rotation to get the true angle
         float wheelAngle = wheelTransform.localRotation.eulerAngles.z;
         float worldAngle = (localAngle + wheelAngle) % 360f;
-        //Debug.Log($"Note Angle: {localAngle}, Wheel Angle: {wheelAngle}, World Angle: {worldAngle}");
         return worldAngle;
     }
-
 
     private string IsNoteInHitWindow(GameObject note)
     {
         float noteAngle = GetNoteAngle(note);
-
-        // Hit zone is at 0 degrees
         float delta = Mathf.Abs(Mathf.DeltaAngle(noteAngle, 0f));
 
-        if(delta <= hitWindow)
+        if (delta <= hitWindow)
             return NOTE_RESULTS[0];
         else if (delta < 180f)
             return NOTE_RESULTS[1];
@@ -149,31 +214,7 @@ public class NoteHitManager : MonoBehaviour
     {
         float noteAngle = GetNoteAngle(note);
         float delta = Mathf.DeltaAngle(noteAngle, 0f);
-        // Clockwise travel means the note passes 0° and angle increases past hitWindow
         return delta > hitWindow;
-    }
-
-    private void checkIsLate()
-    {
-        if (activeNotes.Count == 0) return;
-
-        if (activeNotes[0] == null)
-        {
-            activeNotes.RemoveAt(0);
-            return;
-        }
-
-        // Don't check notes that spawned this frame
-        ReelWheelNote noteComp = activeNotes[0].GetComponent<ReelWheelNote>();
-        if (noteComp != null && noteComp.justSpawned)
-            return;
-
-        if (IsTooLate(activeNotes[0]))
-        {
-            Debug.Log("TOO LATE!");
-            reelWheel.UpdateFishDistance(false);
-            UnregisterNote(activeNotes[0]);
-        }
     }
 
     public bool IsRegistered(GameObject note)
@@ -184,9 +225,10 @@ public class NoteHitManager : MonoBehaviour
     public void ResetNotes()
     {
         nextNoteIndex = 0;
+        isHolding = false;
+        holdingNote = null;
         foreach (var note in activeNotes)
             if (note != null) Destroy(note);
         activeNotes.Clear();
     }
-
 }

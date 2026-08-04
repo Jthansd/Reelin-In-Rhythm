@@ -7,21 +7,15 @@ public class MusicController : MonoBehaviour
 {
     [Header("Assign Music Clip")]
     [SerializeField] private AudioClip musicClip;
-
     private AudioSource audioSource;
-
     [SerializeField] private List<NoteHitTimings> NoteHitTimings = new();
 
     public static MusicController Instance { get; private set; }
-
     public event Action OnSongFinished;
-
-
 
     private void Awake()
     {
         Instance = this;
-
         audioSource = gameObject.AddComponent<AudioSource>();
         audioSource.clip = musicClip;
         audioSource.playOnAwake = false;
@@ -35,7 +29,6 @@ public class MusicController : MonoBehaviour
         }
     }
 
-
     public void PlayMusic()
     {
         if (!audioSource.isPlaying)
@@ -48,7 +41,7 @@ public class MusicController : MonoBehaviour
             audioSource.Stop();
     }
 
-    public List<float> GetNoteTimingsForDifficulty(string difficulty)
+    public List<NoteTiming> GetNoteTimingsForDifficulty(string difficulty)
     {
         return NoteHitTimings[0].GetTimingsForDifficulty(difficulty);
     }
@@ -57,7 +50,4 @@ public class MusicController : MonoBehaviour
     {
         return audioSource.time;
     }
-
-   
-
 }

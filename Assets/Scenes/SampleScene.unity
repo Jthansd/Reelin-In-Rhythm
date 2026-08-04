@@ -1087,6 +1087,7 @@ GameObject:
   - component: {fileID: 330585544}
   - component: {fileID: 330585547}
   - component: {fileID: 330585548}
+  - component: {fileID: 330585549}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -1219,13 +1220,31 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4575070155d9cfd429d119ff1bf69709, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CameraFollow
   player: {fileID: 1047523007}
   offset: {x: 0, y: 3, z: -3}
+--- !u!114 &330585549
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 330585543}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2dc60a56b3ac4ed43a0f5eccddb5ac78, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::CameraOrbit
+  player: {fileID: 1047523027}
+  distance: 3
+  mouseSensitivity: 3
+  minPitch: -20
+  maxPitch: 60
+  lookTargetOffset: {x: 0, y: 1.5, z: 0}
 --- !u!1 &346390816
 GameObject:
   m_ObjectHideFlags: 0
@@ -1479,7 +1498,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MusicController
   musicClip: {fileID: 8300000, guid: 642d3437adac4b9468f6b98e080022d0, type: 3}
   NoteHitTimings:
-  - {fileID: 11400000, guid: 462306356af2bce4d895fe0b860d4794, type: 2}
+  - {fileID: 11400000, guid: a45dbca81556ff142af56d8f52c90b8a, type: 2}
 --- !u!4 &372676267
 Transform:
   m_ObjectHideFlags: 0
@@ -3348,7 +3367,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MovementController
   moveSpeed: 5
-  rotationSpeed: 5
+  rotationSpeed: 10
   gravity: -20
   groundedStickForce: -2
 --- !u!114 &1047523016
@@ -3410,7 +3429,7 @@ CharacterController:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Height: 2
+  m_Height: 1.95
   m_Radius: 0.34
   m_SlopeLimit: 50
   m_StepOffset: 0.3
@@ -3441,7 +3460,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 30b4c2fd8c8d38543a7bd1018a1e71f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerStats
-  luck: 0
+  luck: 10
   catchStrength: 0
   rarityStrength: 0
 --- !u!114 &1047523026
@@ -3458,6 +3477,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerEquipment
   playerStats: {fileID: 1047523025}
   equipmentManager: {fileID: 1586980132}
+  playerInventory: {fileID: 1047523020}
+--- !u!4 &1047523027 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: dd55d012309bbc84b9e656b03f3c1742, type: 3}
+  m_PrefabInstance: {fileID: 1047523006}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1063223782
 GameObject:
   m_ObjectHideFlags: 0
@@ -4134,6 +4159,8 @@ MonoBehaviour:
   beatsPerMeasure: 4
   rotationOffset: 0
   accumulatedAngle: 0
+  holdNoteColor: {r: 0.2, g: 0.5, b: 1, a: 1}
+  holdBarThickness: 8
   noteHitManager: {fileID: 1133458637}
   fishMeter: {fileID: 1566839344}
   isCaught: 0
@@ -4325,7 +4352,7 @@ Transform:
   m_GameObject: {fileID: 1518880984}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.854, y: 2.447, z: -0}
+  m_LocalPosition: {x: -1.854, y: 2.388, z: -0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4350,8 +4377,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 3.4357069, y: 0.018715143, z: 1.8951666}
-  m_Center: {x: 1.2178538, y: -0.49064243, z: -0.0052520037}
+  m_Size: {x: 3.4357069, y: 0.0014569759, z: 1.8951666}
+  m_Center: {x: 1.2178538, y: -0.4992715, z: -0.0052520037}
 --- !u!1 &1530152413
 GameObject:
   m_ObjectHideFlags: 0

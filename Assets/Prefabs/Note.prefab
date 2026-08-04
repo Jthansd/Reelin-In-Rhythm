@@ -88,4 +88,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8fa4946a2004eae42a029510dcb96244, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ReelWheelNote
-  degreesToTravel: 360
+  travelTime: 0
+  justSpawned: 1
+  noteType: 0
+  holdDuration: 0.15
+  isVisualOnly: 0

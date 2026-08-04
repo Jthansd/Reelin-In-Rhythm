@@ -28,6 +28,10 @@ public class ReelWheel : MonoBehaviour
 
     public float accumulatedAngle = 0f;
 
+    [Header("Hold Note Visuals")]
+    [SerializeField] private Color holdNoteColor = new Color(0.2f, 0.5f, 1f, 1f); // blue
+    [SerializeField] private float holdBarThickness = 8f;
+
     [SerializeField] private NoteHitManager noteHitManager;
 
     [SerializeField] private FishMeter fishMeter;
@@ -45,47 +49,37 @@ public class ReelWheel : MonoBehaviour
         if (PlayReelWheel)
         {
             RunOrbit();
-            //CheckInput();
             noteHitManager.SpawnNotesOnTime();
             noteHitManager.CheckInput();
-            //SpawnNotesOnTime();
         }
     }
 
     private void RunOrbit()
     {
-        //start wheel spinning
-
-        // Calculate the rotation speed based on BPM and beats per measure
-        //60 seconds per minute / BPM = seconds per beat
         float secondsPerBeat = 60f / bpm;
-
-        // seconds per beat * beats per measure = seconds per measure
         float secondsPerMeasure = secondsPerBeat * beatsPerMeasure;
-
-        // 360 degrees per measure / seconds per measure = degrees per second
         float degreesPerSecond = 360f / secondsPerMeasure;
 
-        // Update the angle based on the rotation speed and delta time
         angle -= degreesPerSecond * Time.deltaTime;
         angle = (angle + 360f) % 360f;
 
-        //
         float rotationOffset = 90f;
 
         wheel.localRotation = Quaternion.Euler(0, 0, angle + rotationOffset);
     }
 
-    public void SpawnSingleNote()
+    public float GetDegreesPerSecond()
     {
+        float secondsPerBeat = 60f / bpm;
+        float secondsPerMeasure = secondsPerBeat * beatsPerMeasure;
+        return 360f / secondsPerMeasure;
+    }
 
-        //responsible for spawning a single note on the reel wheel at the spawn point
-
-
+    public void SpawnSingleNote(NoteTiming timing)
+    {
         GameObject note = Instantiate(notePrefab, wheel);
         RectTransform noteRect = note.GetComponent<RectTransform>();
 
-        // position at spawnpoint (your fixed spawner)
         Vector2 localPos;
         RectTransformUtility.ScreenPointToLocalPointInRectangle(
             wheel,
@@ -95,45 +89,90 @@ public class ReelWheel : MonoBehaviour
         );
         noteRect.anchoredPosition = localPos;
 
-        // configure despawn distance for this note
         var noteComp = note.GetComponent<ReelWheelNote>();
 
         float secondsPerBeat = 60f / bpm;
-        float secondsPerMeasure = secondsPerBeat * beatsPerMeasure;
-        float degreesPerSecond = 360f / secondsPerMeasure;
-
         noteComp.travelTime = secondsPerBeat * 4;
+        noteComp.noteType = timing.noteType;
+
+        if (timing.noteType == NoteType.Hold)
+        {
+            float holdDuration = Mathf.Max(0f, timing.releaseTime - timing.hitTime);
+            noteComp.holdDuration = holdDuration;
+
+            var headImage = note.GetComponent<UnityEngine.UI.Image>();
+            if (headImage != null)
+                headImage.color = holdNoteColor;
+
+            Vector2 tailLocalPos = SpawnHoldTail(localPos, noteComp.travelTime, holdDuration, out GameObject tailObj);
+            GameObject bar = CreateHoldBar(localPos, tailLocalPos, noteComp.travelTime);
+
+            noteComp.holdTail = tailObj;
+            noteComp.holdBar = bar;
+
+            // Give the head references so it can take them down together on OnDestroy.
+            // (SpawnHoldTail is changed below to also return the tail GameObject via an out param.)
+
+        }
 
         noteHitManager.RegisterNote(note);
     }
 
+    private Vector2 SpawnHoldTail(Vector2 headLocalPos, float headTravelTime, float holdDuration, out GameObject tailObject)
+    {
+        float offsetDegrees = GetDegreesPerSecond() * holdDuration;
+        float rad = offsetDegrees * Mathf.Deg2Rad;
 
-    //private void CheckInput()
-    //{
-    //    if (Keyboard.current.spaceKey.wasPressedThisFrame)
-    //    {
-    //        float delta = Mathf.DeltaAngle(angle, 0f);
+        float cos = Mathf.Cos(rad);
+        float sin = Mathf.Sin(rad);
+        Vector2 tailLocalPos = new Vector2(
+            headLocalPos.x * cos - headLocalPos.y * sin,
+            headLocalPos.x * sin + headLocalPos.y * cos
+        );
 
-    //        if (Mathf.Abs(delta) < hitWindow)
-    //        {
-    //            Debug.Log("HIT!");
-    //            fishDistance -= 0.1f;
-    //        }
-    //        else
-    //        {
-    //            Debug.Log("MISS!");
-    //            fishDistance += 0.05f;
-    //        }
+        GameObject tail = Instantiate(notePrefab, wheel);
+        RectTransform tailRect = tail.GetComponent<RectTransform>();
+        tailRect.anchoredPosition = tailLocalPos;
 
-    //        fishDistance = Mathf.Clamp01(fishDistance);
+        var tailComp = tail.GetComponent<ReelWheelNote>();
+        tailComp.travelTime = headTravelTime;
+        tailComp.isVisualOnly = true;
 
-    //        if (fishDistance <= 0f)
-    //        {
-    //            Debug.Log("Fish caught! (Test Mode)");
-    //            StopReelWheel();
-    //        }
-    //    }
-    //}
+        var image = tail.GetComponent<UnityEngine.UI.Image>();
+        if (image != null)
+        {
+            image.color = holdNoteColor;
+        }
+
+        tailObject = tail;
+        return tailLocalPos;
+    }
+
+    private GameObject CreateHoldBar(Vector2 headLocalPos, Vector2 tailLocalPos, float travelTime)
+    {
+        Vector2 delta = tailLocalPos - headLocalPos;
+        float distance = delta.magnitude;
+        float angleDeg = Mathf.Atan2(delta.y, delta.x) * Mathf.Rad2Deg;
+        Vector2 midpoint = (headLocalPos + tailLocalPos) * 0.5f;
+
+        GameObject bar = new GameObject("HoldBar", typeof(RectTransform), typeof(UnityEngine.UI.Image));
+        bar.transform.SetParent(wheel, false);
+        bar.transform.SetAsFirstSibling();
+
+        RectTransform barRect = bar.GetComponent<RectTransform>();
+        barRect.anchoredPosition = midpoint;
+        barRect.sizeDelta = new Vector2(distance, holdBarThickness);
+        barRect.localRotation = Quaternion.Euler(0f, 0f, angleDeg);
+
+        var image = bar.GetComponent<UnityEngine.UI.Image>();
+        image.color = holdNoteColor;
+
+        var noteComp = bar.AddComponent<ReelWheelNote>();
+        noteComp.travelTime = travelTime;
+        noteComp.isVisualOnly = true;
+
+        return bar;
+    }
 
     public void IsCaught()
     {
@@ -157,7 +196,6 @@ public class ReelWheel : MonoBehaviour
     {
         PlayReelWheel = false;
         reelWheelUI.SetActive(false);
-
     }
 
     public bool IsPlaying()
@@ -197,6 +235,4 @@ public class ReelWheel : MonoBehaviour
             fishMeter.Decay();
         }
     }
-
-
 }

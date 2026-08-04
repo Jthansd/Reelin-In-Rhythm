@@ -79,6 +79,18 @@ public class Inventory : MonoBehaviour
         return false;
     }
 
+    public int GetItemQuantity(Item item)
+    {
+        for (int i = 0; i < inventorySlots.Count; i++)
+        {
+            if (inventorySlots[i].item == item)
+            {
+                return inventorySlots[i].itemQuantity;
+            }
+        }
+        return 0;
+    }
+
     public void NotifyInventoryChanged()
     {
         OnInventoryChanged?.Invoke();

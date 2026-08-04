@@ -40,6 +40,8 @@ public class PlayerInventoryUI : MonoBehaviour, IInventoryUI
 
     public void ToggleInventoryUI()
     {
-        inventoryPanel.SetActive(!inventoryPanel.activeSelf);
+        bool newState = !inventoryPanel.activeSelf;
+        inventoryPanel.SetActive(newState);
+        CameraOrbit.Instance?.SetLookEnabled(!newState);
     }
 }

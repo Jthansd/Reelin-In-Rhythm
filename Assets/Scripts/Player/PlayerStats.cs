@@ -43,7 +43,21 @@ public class PlayerStats : MonoBehaviour
         }
     }
 
-    
+
+    public void ApplyBaitBuff(EquipmentItem bait)
+    {
+        AdjustStat(StatType.Luck, bait.LuckBonus);
+        AdjustStat(StatType.CatchStrength, bait.CatchStrengthBonus);
+        AdjustStat(StatType.RarityStrength, bait.RarityBonus);
+    }
+
+    public void RevertBaitBuff(EquipmentItem bait)
+    {
+        AdjustStat(StatType.Luck, -bait.LuckBonus);
+        AdjustStat(StatType.CatchStrength, -bait.CatchStrengthBonus);
+        AdjustStat(StatType.RarityStrength, -bait.RarityBonus);
+    }
+
 
 
 }
