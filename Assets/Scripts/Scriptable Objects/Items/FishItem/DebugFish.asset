@@ -16,5 +16,7 @@ MonoBehaviour:
   itemDescription: oops
   icon: {fileID: 21300000, guid: 53b4f930c46172e40bf93c44e1de0e76, type: 3}
   itemID: 1f7cb1c9-3eb4-4033-ba56-967ba58f0c7c
+  value: 0
   sellValue: 1
-  rarity: impossible
+  rarityType: 5
+  customDifficultyMultiplier: 1

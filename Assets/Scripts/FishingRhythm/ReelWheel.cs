@@ -1,4 +1,4 @@
-using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -14,12 +14,10 @@ public class ReelWheel : MonoBehaviour
     public float hitWindow = 15f;   // degrees around the top
 
     private float angle = 0f;
-    private float fishDistance = 1f; // 1 = far, 0 = caught
 
-    private bool PlayReelWheel = false;
+    private bool isRunning = false; // internal only - is the wheel actively spinning right now
 
     public GameObject noteDestroyer;
-
 
     [Header("Music Sync")]
     public float bpm = 130f;
@@ -30,14 +28,20 @@ public class ReelWheel : MonoBehaviour
 
     [Header("Hold Note Visuals")]
     [SerializeField] private Color holdNoteColor = new Color(0.2f, 0.5f, 1f, 1f); // blue
+    [SerializeField] private Color skipNoteColor = Color.red;
+    [SerializeField] private Color altNoteColor = Color.green;
     [SerializeField] private float holdBarThickness = 8f;
 
     [SerializeField] private NoteHitManager noteHitManager;
-
     [SerializeField] private FishMeter fishMeter;
+    [SerializeField] private FishingController fishingController;
 
-    public bool isCaught = false;
+    private float progressAmount = 0.1f;
 
+    // Fired exactly once per reel attempt, when the outcome is decided. bool = fish caught.
+    public event Action<bool> OnReelComplete;
+
+    public bool IsPlaying() => isRunning;
     void Start()
     {
         reelWheelUI.SetActive(false);
@@ -46,7 +50,7 @@ public class ReelWheel : MonoBehaviour
 
     void Update()
     {
-        if (PlayReelWheel)
+        if (isRunning)
         {
             RunOrbit();
             noteHitManager.SpawnNotesOnTime();
@@ -109,10 +113,18 @@ public class ReelWheel : MonoBehaviour
 
             noteComp.holdTail = tailObj;
             noteComp.holdBar = bar;
-
-            // Give the head references so it can take them down together on OnDestroy.
-            // (SpawnHoldTail is changed below to also return the tail GameObject via an out param.)
-
+        }
+        else if (timing.noteType == NoteType.Skip)
+        {
+            var headImage = note.GetComponent<UnityEngine.UI.Image>();
+            if (headImage != null)
+                headImage.color = skipNoteColor;
+        }
+        else if (timing.noteType == NoteType.Altkey)
+        {
+            var headImage = note.GetComponent<UnityEngine.UI.Image>();
+            if (headImage != null)
+                headImage.color = altNoteColor;
         }
 
         noteHitManager.RegisterNote(note);
@@ -174,33 +186,27 @@ public class ReelWheel : MonoBehaviour
         return bar;
     }
 
-    public void IsCaught()
-    {
-        isCaught = true;
-    }
-
     public void StartReelWheel()
     {
-        isCaught = false;
+        MusicController.Instance.OnStartReelWheel();
+        CameraOrbit.Instance.SetLookEnabled(false);
         fishMeter.ResetProgress();
         reelWheelUI.SetActive(true);
         angle = 0f;
-        fishDistance = 1f;
         noteHitManager.ResetNotes();
         noteHitManager.GetSpawnTimes();
-        PlayReelWheel = true;
+        isRunning = true;
         MusicController.Instance.PlayMusic();
+        progressAmount = fishingController.GetProgress();
+        Debug.Log("Progress amount set to: " + progressAmount);
     }
 
-    public void StopReelWheel()
+    private void StopReelWheel()
     {
-        PlayReelWheel = false;
+        CameraOrbit.Instance.SetLookEnabled(true);
+        isRunning = false;
         reelWheelUI.SetActive(false);
-    }
-
-    public bool IsPlaying()
-    {
-        return PlayReelWheel;
+        MusicController.Instance.StopMusic();
     }
 
     private void OnEnable()
@@ -215,24 +221,30 @@ public class ReelWheel : MonoBehaviour
 
     private void HandleSongFinished()
     {
+        // Song ran out before the meter resolved either way - treat as a failure.
         StopReelWheel();
+        OnReelComplete?.Invoke(false);
     }
 
     public void UpdateFishDistance(bool hit)
     {
-        if (hit)
+        int result = fishMeter.Advance(hit, progressAmount);
+        if (result == 0)
         {
-            if (fishMeter.Advance())
-            {
-                Debug.Log("Fish caught!");
-                StopReelWheel();
-                IsCaught();
-                return;
-            }
+            return; // no resolution yet, still reeling
         }
-        else
+
+        StopReelWheel();
+
+        if (result == -1)
         {
-            fishMeter.Decay();
+            Debug.Log("Fish got away!");
+            OnReelComplete?.Invoke(false);
+        }
+        else if (result == 1)
+        {
+            Debug.Log("Fish caught!");
+            OnReelComplete?.Invoke(true);
         }
     }
 }

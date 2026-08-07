@@ -1240,8 +1240,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CameraOrbit
   player: {fileID: 1047523027}
-  distance: 3
-  mouseSensitivity: 3
+  distance: 4.5
+  mouseSensitivity: 2
   minPitch: -20
   maxPitch: 60
   lookTargetOffset: {x: 0, y: 1.5, z: 0}
@@ -1496,9 +1496,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 81d872de4ebf41d409d27247784e76b4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MusicController
-  musicClip: {fileID: 8300000, guid: 642d3437adac4b9468f6b98e080022d0, type: 3}
-  NoteHitTimings:
-  - {fileID: 11400000, guid: a45dbca81556ff142af56d8f52c90b8a, type: 2}
+  songDatabase: {fileID: 11400000, guid: 44143d7585d0a884fbb727a00d82bad2, type: 2}
 --- !u!4 &372676267
 Transform:
   m_ObjectHideFlags: 0
@@ -3408,9 +3406,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15bb05d9d0c00134b94fce074d4b8a2c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Inventory
-  inventorySlots:
-  - item: {fileID: 11400000, guid: efa6b4ed034957544b971e161c519e80, type: 2}
-    itemQuantity: 5
+  inventorySlots: []
 --- !u!143 &1047523022
 CharacterController:
   m_ObjectHideFlags: 0
@@ -3429,13 +3425,13 @@ CharacterController:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Height: 1.95
+  m_Height: 1.6
   m_Radius: 0.34
   m_SlopeLimit: 50
   m_StepOffset: 0.3
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 1, z: 0}
+  m_Center: {x: 0, y: 0.9, z: 0}
 --- !u!114 &1047523024
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3460,9 +3456,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 30b4c2fd8c8d38543a7bd1018a1e71f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerStats
-  luck: 10
-  catchStrength: 0
-  rarityStrength: 0
+  luck: 5
+  catchStrength: 10
+  rarityStrength: 10
 --- !u!114 &1047523026
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4160,10 +4156,12 @@ MonoBehaviour:
   rotationOffset: 0
   accumulatedAngle: 0
   holdNoteColor: {r: 0.2, g: 0.5, b: 1, a: 1}
+  skipNoteColor: {r: 1, g: 0, b: 0, a: 1}
+  altNoteColor: {r: 0, g: 1, b: 0, a: 1}
   holdBarThickness: 8
   noteHitManager: {fileID: 1133458637}
   fishMeter: {fileID: 1566839344}
-  isCaught: 0
+  fishingController: {fileID: 1940340343}
 --- !u!1 &1417966132
 GameObject:
   m_ObjectHideFlags: 0
@@ -4981,7 +4979,6 @@ MonoBehaviour:
   fishingLine: {fileID: 6494974794756961073, guid: 489cc089f801acd459e7f3e5b95d6eed, type: 3}
   bobber: {fileID: 4677524168787254510, guid: 7aa506f927afa9d46b7255a997faac8e, type: 3}
   castForce: 10
-  hooked: 0
   musicController: {fileID: 372676266}
   playerInventory: {fileID: 1047523020}
   fishingReward: {fileID: 1940340345}

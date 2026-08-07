@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -16,33 +17,25 @@ public class FishingController : MonoBehaviour
     private GameObject activeBobber;
     private GameObject activeLine;
 
-    private bool bobberInWater = false;         
-    private bool fishingRoutineRunning = false;  
-    public bool hooked = false;
-
     private float checkInterval = 2f;
 
     private FishItem currentFish;
-
     private EquipmentItem currentBait;
 
+    private float passingPercent = 0.7f; // 70% passing notes required to catch the fish
 
     [SerializeField] MusicController musicController;
-
     [SerializeField] Inventory playerInventory;
-
     [SerializeField] FishingReward fishingReward;
-
     [SerializeField] PlayerStats playerStats;
-
     [SerializeField] PlayerEquipment playerEquipment;
-
     [SerializeField] RarityConfig rarityConfig;
 
-    //1. apply bait bonus when player casts
-    //2. Remove bait bonus if player cancels fishing
-    //3. consume the bait when the player hooks a fish
-    //4. Remove the bait bonus when the fishing event is over (player win or player loss)
+    public FishingState CurrentState { get; private set; } = FishingState.Idle;
+
+    // Fired when a fishing encounter ends, either way. bool = was the fish caught.
+    public event Action<bool> OnFishingEncounterEnded;
+
     private void Update()
     {
         UpdateLine();
@@ -51,33 +44,40 @@ public class FishingController : MonoBehaviour
     private void OnEnable()
     {
         WaterController.OnBobberEnteredWater += HandleBobberEntered;
+        reelWheel.OnReelComplete += HandleReelComplete;
     }
 
     private void OnDisable()
     {
         WaterController.OnBobberEnteredWater -= HandleBobberEntered;
+        reelWheel.OnReelComplete -= HandleReelComplete;
     }
 
     public void Cast()
     {
-        //1. Apply bait bonus when player casts
-
-        // If already fishing, reel in / cancel
-        if (bobberInWater || activeBobber != null)
+        if (CurrentState == FishingState.Idle)
         {
-            ReelIn();
-            return;
+            StartCast();
         }
+        else if (CurrentState == FishingState.WaitingForBite)
+        {
+            CancelCast();
+        }
+        // Hooked / Reeling: casting input is ignored entirely - Fisherman shouldn't even call
+        // Cast() in these states, but this guards against it regardless.
+    }
 
-        // Spawn bobber + line
+    private void StartCast()
+    {
         activeBobber = Instantiate(bobber, poleTip.position, poleTip.rotation);
         activeLine = Instantiate(fishingLine, poleTip.position, poleTip.rotation);
 
-        // Apply force
         Rigidbody rb = activeBobber.GetComponent<Rigidbody>();
         rb.linearVelocity = poleTip.forward * castForce;
 
         ApplyBait();
+
+        CurrentState = FishingState.WaitingForBite;
     }
 
     private void UpdateLine()
@@ -97,178 +97,189 @@ public class FishingController : MonoBehaviour
         activeLine.transform.localScale = scale;
     }
 
-    private void HandleBobberEntered(GameObject bobber)
+    private void HandleBobberEntered(GameObject bobberObj)
     {
-        if (bobber != activeBobber)
+        if (bobberObj != activeBobber)
+            return;
+
+        if (CurrentState != FishingState.WaitingForBite)
             return;
 
         Debug.Log("FishingController: Bobber entered water");
-
-        bobberInWater = true;
-
-        if (!fishingRoutineRunning)
-            StartCoroutine(FishingCoroutine());
+        StartCoroutine(BiteCheckCoroutine());
     }
 
-    private IEnumerator FishingCoroutine()
+    private IEnumerator BiteCheckCoroutine()
     {
-        fishingRoutineRunning = true;
-
         Debug.Log("Started fishing!");
 
-        while (bobberInWater && !hooked)
+        while (CurrentState == FishingState.WaitingForBite)
         {
-            Debug.Log("Checking for fish...");
             yield return new WaitForSeconds(checkInterval);
 
-            int roll = Random.Range(1, 10 - playerStats.Luck);
+            if (CurrentState != FishingState.WaitingForBite)
+                yield break; // player cancelled while we were waiting
+
+            int roll = UnityEngine.Random.Range(1, 10 - playerStats.Luck);
             Debug.Log($"Rolled a {roll} (1 in {10 - playerStats.Luck} chance)");
 
             if (roll == 1)
             {
-                //hooked = true;
                 HandleHookedAction();
+                yield break;
             }
         }
-
-        fishingRoutineRunning = false;
     }
 
     private void HandleHookedAction()
     {
         Debug.Log("Fish hooked!");
-        hooked = true;
+        CurrentState = FishingState.Hooked;
+
         if (playerEquipment.ConsumeBait(out EquipmentItem baitUsed))
         {
             currentBait = baitUsed;
         }
         else
         {
-            currentBait = null; // No bait was used
+            currentBait = null;
             Debug.Log("No bait equipped.");
         }
 
-        //get the fish that was hooked
         if (fishingReward.GetRandomFishWithRarity(DetermineRarity()) is FishItem fish)
         {
             currentFish = fish;
+            DetermineDifficulty(currentFish);
         }
-        
-        fisherman.StartReeling();
-        StartCoroutine(ReelingRoutine());
-    }
-    
 
-    //TODO: Edit this to only apply and consume the bait if a fish is hooked
-    //if the player reels in early we do not consume the bait
-    //also if the player hooks a fish but loses it, bait is consumed
+        fisherman.StartReeling();
+        CurrentState = FishingState.Reeling;
+        reelWheel.StartReelWheel();
+    }
+
+    private void HandleReelComplete(bool caught)
+    {
+        Debug.Log(caught ? "Player caught the fish!" : "Player failed to catch the fish.");
+
+        fisherman.Reel();
+
+        if (caught)
+        {
+            ReeledIn();
+        }
+        else
+        {
+            CleanUpTackle();
+            playerEquipment.RevertBaitBuff(currentBait);
+        }
+
+        currentFish = null;
+        currentBait = null;
+        CurrentState = FishingState.Idle;
+
+        OnFishingEncounterEnded?.Invoke(caught);
+    }
+
+    private void CancelCast()
+    {
+        Debug.Log("Reeling In (cancelled - no bite yet)!");
+        CleanUpTackle();
+        playerEquipment.RevertBaitBuff();
+        CurrentState = FishingState.Idle;
+    }
+
+    private void CleanUpTackle()
+    {
+        if (activeBobber != null)
+            Destroy(activeBobber);
+
+        if (activeLine != null)
+            Destroy(activeLine);
+
+        activeBobber = null;
+        activeLine = null;
+    }
+
+    private void DetermineDifficulty(FishItem fish)
+    {
+        float fishDifficulty = FishingMath.CalculateFishDifficultyProduct(
+            fish.BaseDifficulty,
+            fish.GetRarityMultiplier(),
+            fish.CustomDifficultyMultiplier
+        );
+
+        float relativeDifficulty = fishDifficulty / playerStats.CatchStrength;
+
+        TimingDifficulty tier;
+        if (relativeDifficulty >= 1.75f)
+            tier = TimingDifficulty.Hard;
+        else if (relativeDifficulty > 1.0f)
+            tier = TimingDifficulty.Medium;
+        else
+            tier = TimingDifficulty.Easy;
+
+        musicController.SetDifficulty(tier);
+
+        Debug.Log($"Fish difficulty: {fishDifficulty}, relative: {relativeDifficulty}, tier chosen: {tier}");
+    }
+
     private void ApplyBait()
     {
         playerEquipment.ApplyBaitBonus();
-
-        //if (playerEquipment.ConsumeBait(out EquipmentItem baitUsed))
-        //{
-        //    Debug.Log("Bait applied to the hooked fish!");
-        //    // Implement any additional logic for bait effects here
-        //    Debug.Log($"Bait used: {baitUsed.name}");
-
-        //    currentBait = baitUsed; // Store the bait used for later reference
-        //}
-        //else
-        //{
-        //    currentBait = null; // No bait was used
-        //    Debug.Log("No bait equipped.");
-        //}
     }
-
 
     public FishItem.Rarity DetermineRarity()
     {
         Debug.Log("Determine Rarity was called");
-        int strength = playerStats.RarityStrength; //player rarityStrength
+        int strength = playerStats.RarityStrength;
 
-        List<(FishItem.Rarity rarity, float weight)> weightedPool = new(); //empty list of rarities and they're weights
+        List<(FishItem.Rarity rarity, float weight)> weightedPool = new();
         float totalWeight = 0f;
 
-        foreach (var config in rarityConfig.rarityWeights) //for each weight config in rarityWeightsConfig
+        foreach (var config in rarityConfig.rarityWeights)
         {
-            float weight = rarityConfig.GetWeight(config, strength); //get the weight of a rarity
-            if (weight <= 0f) continue; // still locked, skip entirely
+            float weight = rarityConfig.GetWeight(config, strength);
+            if (weight <= 0f) continue;
 
-            weightedPool.Add((config.rarity, weight)); //add that weight to the pool
-            totalWeight += weight; //add to total weight
+            weightedPool.Add((config.rarity, weight));
+            totalWeight += weight;
         }
 
-        float roll = Random.Range(0f, totalWeight); //pick a random value from the total cumulative weight
+        float roll = UnityEngine.Random.Range(0f, totalWeight);
         float cumulative = 0f;
 
-        foreach (var (rarity, weight) in weightedPool)//for each rarity + weight in the pool of rarity weights
+        foreach (var (rarity, weight) in weightedPool)
         {
-            cumulative += weight; //update the cumulative weigth with the rarity weigth
-            if (roll <= cumulative) //if the roll was within the cumulative amount
+            cumulative += weight;
+            if (roll <= cumulative)
             {
                 Debug.Log("The rarity roll determine that the fish is " + rarity.ToString());
-                return rarity; // then  return the rarity the roll was within the weight range of
+                return rarity;
             }
         }
 
-
         Debug.Log("Fish was common cause something went wrong");
-        return FishItem.Rarity.Common; // fallback, should only hit this on floating-point edge cases
+        return FishItem.Rarity.Common;
     }
 
-    private IEnumerator ReelingRoutine()
-    {
-        reelWheel.StartReelWheel();
-        yield return new WaitUntil(() => reelWheel.isCaught);
-        fisherman.Reel();
-    }
-
-    public void ReeledIn()
+    private void ReeledIn()
     {
         Debug.Log("Fish reeled in!");
 
-        hooked = false;
-        bobberInWater = false;
-
-        if (activeBobber != null)
-            Destroy(activeBobber);
-
-        if (activeLine != null)
-            Destroy(activeLine);
-
-        activeBobber = null;
-        activeLine = null;
-
+        CleanUpTackle();
         musicController.StopMusic();
 
-        // Add the fish to the player's inventory
-        
+        Debug.Log($"Adding {currentFish.name} to inventory.");
         playerInventory.AddItem(currentFish);
-        playerEquipment.RevertBaitBuff(currentBait); // Revert the bait bonus after the fishing event is over
-
-
+        playerEquipment.RevertBaitBuff(currentBait);
     }
 
-    private void ReelIn()
+    public float GetProgress()
     {
-        if (hooked)
-        {
-            return; // Don't allow reeling in if a fish is hooked
-        }
-        // Player manually reels in early
-        bobberInWater = false;
-
-        if (activeBobber != null)
-            Destroy(activeBobber);
-
-        if (activeLine != null)
-            Destroy(activeLine);
-
-        activeBobber = null;
-        activeLine = null;
-
-        hooked = false;
-        playerEquipment.RevertBaitBuff(); // Revert the bait bonus if the player cancels fishing
+        return FishingMath.CalculateHitProgress(
+            playerStats.CatchStrength,
+            FishingMath.CalculateFishDifficultyProduct(currentFish.BaseDifficulty, currentFish.GetRarityMultiplier(), currentFish.CustomDifficultyMultiplier),
+            FishingMath.CalculateNotesNeededAtParity(passingPercent, musicController.GetNoteCount())
+        );
     }
 }

@@ -13,6 +13,6 @@ public class UIStateManager : MonoBehaviour
 
     private void Update()
     {
-        hookedText.gameObject.SetActive(fishingController.hooked);
+        hookedText.gameObject.SetActive(fishingController.CurrentState == FishingState.Hooked);
     }
 }

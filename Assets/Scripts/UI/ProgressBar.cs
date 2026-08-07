@@ -13,10 +13,21 @@ public class ProgressBar : MonoBehaviour
         fill.fillAmount = this.progress;
     }
 
-    public bool UpdateProgress(float amount)
+    public int UpdateProgress(float amount)
     {
         SetProgress(this.progress + amount);
-        return this.progress <= 0f;  
+        if(this.progress < 1f && this.progress > 0f)
+        {
+            return 0; // Progress bar is neither full nor empty
+        }
+        else if(this.progress <= 0f)
+        {
+            return 1; // Progress bar is empty
+        }
+        else
+        {
+            return -1; // Progress bar is full
+        }
     }
 
     void Start()

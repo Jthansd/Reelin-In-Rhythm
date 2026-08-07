@@ -16,8 +16,8 @@ MonoBehaviour:
   itemDescription: A rod with some beef to it
   icon: {fileID: 0}
   itemID: a402894c-aab4-4502-8fa0-a430c92a53d1
+  value: 0
   equipmentType: 0
-  catchStrengthBonus: 1
+  catchStrengthBonus: 15
   luckBonus: 0
-  rarityBonus: 0
-  cost: 15
+  rarityBonus: 10

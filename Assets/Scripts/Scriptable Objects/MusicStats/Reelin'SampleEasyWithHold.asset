@@ -1,0 +1,16 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43a4a4f9f81c1db4e98f8d5ef360c91d, type: 3}
+  m_Name: Reelin'SampleEasyWithHold
+  m_EditorClassIdentifier: Assembly-CSharp::MusicStats
+  music: {fileID: 8300000, guid: 9cae2040ed6806347945d3679d60116b, type: 3}
+  hitTimings: {fileID: 11400000, guid: 3028e88cbdcba2e46acd34aec136d9b3, type: 2}

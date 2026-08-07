@@ -4,7 +4,9 @@ using UnityEngine;
 public enum NoteType
 {
     Tap,
-    Hold
+    Hold,
+    Altkey,
+    Skip
 }
 
 public class ReelWheelNote : MonoBehaviour

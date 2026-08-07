@@ -1,0 +1,138 @@
+# Reelin' In Rhythm — Difficulty & Note System Design
+
+*Design discussion summary — living document, revisit and update as implementation evolves.*
+
+## Core Inspiration: WebFishing
+
+WebFishing's spam-click reeling mechanic scales required clicks with fish rarity, and if the
+player's gear isn't leveled up, some fish are effectively **impossible** to catch. This makes
+rare fish visible as future goals rather than hidden content, and gives the player a concrete
+reason to upgrade gear.
+
+The key insight translated for our rhythm-based system: it's not about *more notes*, it's about
+**how much a correct hit is worth** relative to the fish's difficulty. This preserves felt
+difficulty without requiring longer songs or infinite content.
+
+---
+
+## Two Independent Difficulty Axes
+
+Rather than one blended difficulty score, the system splits into two orthogonal axes — mirroring
+WebFishing's skill gate + gear gate split:
+
+1. **Song/note-pattern difficulty (Tier)** — is this pattern hard to *play well*? (note density,
+   note type variety, timing tightness)
+2. **Power/progress difficulty** — even playing perfectly, can the player's gear make enough
+   progress per hit to actually land the fish?
+
+Keeping these separate means a strong player with weak gear experiences the fish differently than
+a weak player with strong gear — both axes matter independently.
+
+---
+
+## Axis 1: Progress-Per-Hit (Power Gate)
+
+Instead of scaling hit *count*, scale how much **progress** each successful hit contributes to
+the fish meter:
+
+```
+difficultyScore = rarityBaseDifficulty × fishDifficultyMultiplier
+progressPerHit  = playerPower / difficultyScore
+```
+
+- `rarityBaseDifficulty` — derived from the existing `RarityConfig` curve (Common = low,
+  Legendary = high).
+- `fishDifficultyMultiplier` — a per-fish override field, letting a specific fish be harder than
+  its rarity would suggest (e.g. a stubborn Common fish).
+- `playerPower` — a new derived stat (possibly a dedicated `ReelPower` stat on `PlayerStats`,
+  combined with equipped gear bonuses).
+
+**Why not just add more required hits per fish:** a song has a fixed note count; scaling hit
+count either requires ever-longer songs (limited content) or repeating the same short loop
+multiple times (repetitive, breaks pacing). Scaling *progress per hit* achieves the same felt
+difficulty without touching song/pattern structure.
+
+**Other levers that can scale with `difficultyScore`** (not just progress-per-hit):
+- **Miss penalty** — `FishMeter.Decay()` amount could scale up with difficulty, rewarding
+  consistency, not just raw power.
+- **Hit window tightness** — the flat 15° hit window could shrink for harder fish, adding a
+  precision gate alongside the power gate.
+
+**Open design question (unresolved):** should low power ever make a fish *literally impossible*
+(0% chance, like WebFishing), or always *technically possible but brutally unforgiving* (near-zero
+progress per hit, demanding a flawless run)? Bold vs. polarizing tradeoff — revisit before
+finalizing.
+
+---
+
+## Axis 2: Difficulty Tier (Skill Gate)
+
+**Final structure (as decided):** Keep the existing 3 lists per song (`Easy` / `Medium` / `Hard`
+inside `NoteHitTimings`), but each tier is now **self-contained and independently clearable** —
+no more layering tiers on top of each other. A fish encounter picks **one** tier to play, not a
+stacked combination.
+
+- No tier should ever be unwinnable. The difference between tiers is **more simultaneous
+  responsibilities** — higher note density, more/varied note types (Tap, Hold, future types),
+  tighter execution demands — not impossible content.
+- This also resolves an existing bug: `NoteHitManager.SpawnNotesOnTime()` currently only ever
+  reads `spawnTimes[0]` (Easy), even though `GetSpawnTimes()` loads all three lists — the
+  "harder fish layer in more lists" idea was never actually implemented. The new model replaces
+  this mechanism entirely rather than patching the bug.
+
+**Tier resolution formula** (uses the *same* underlying numbers as progress-per-hit, just
+consumed differently):
+
+```
+relativeDifficulty = fishDifficultyScore / playerPower
+tier = threshold mapping of relativeDifficulty → Easy / Medium / Hard
+```
+
+Using the same `fishDifficultyScore` / `playerPower` relationship for both axes means there's
+only one core relationship to balance-tune, not two disconnected curves.
+
+**Structural simplification this enables:** `NoteHitManager.spawnTimes` no longer needs to hold
+all three lists (`List<List<NoteTiming>>`) — since only one tier's notes ever spawn per encounter,
+it can become a single resolved `List<NoteTiming>`, chosen once in `GetSpawnTimes()` based on the
+resolved tier.
+
+**Open question:** should specific fish be able to override the tier resolution (e.g. "this fish
+always plays at least Medium," similar to the per-fish difficulty multiplier)? Not yet decided.
+
+---
+
+## Song Selection (Decoupled from Difficulty)
+
+Original idea (superseded): give each song a `difficultyRating` and pick a song near the fish's
+difficulty score.
+
+**Current direction:** since difficulty now lives entirely in the *tier* (Axis 2), song selection
+no longer needs to encode difficulty at all. Song choice becomes a pure **variety/flavor**
+decision — random from the library, or later tied to location/fish-type — fully decoupled from
+challenge level. This is simpler than the difficulty-rating-per-song approach and means the same
+song can be reused across many fish encounters at different difficulties, without needing 3x the
+total songs.
+
+---
+
+## Net Encounter Flow (resulting model)
+
+A fish encounter resolves in two independent steps:
+
+1. **Pick a song** — flavor/variety only, no difficulty implication.
+2. **Pick a tier from that song** (Easy/Medium/Hard) — driven by `fishDifficultyScore` vs.
+   `playerPower`, determines which pre-authored, guaranteed-clearable note list plays.
+
+Progress-per-hit (Axis 1) then determines how much each successful hit within that tier actually
+advances the fish meter, independent of which tier or song was chosen.
+
+---
+
+## Not Yet Decided / Follow-Up Topics
+
+- Impossible vs. always-technically-possible fish at low power (Axis 1 open question above).
+- Per-fish tier override / minimum tier floor (Axis 2 open question above).
+- Exact `playerPower` stat design — new dedicated stat vs. derived from existing `PlayerStats`.
+- Threshold values for `relativeDifficulty → tier` mapping.
+- Whether miss-penalty scaling and hit-window tightening (secondary levers) get implemented
+  alongside progress-per-hit, or added later as extra tuning knobs.

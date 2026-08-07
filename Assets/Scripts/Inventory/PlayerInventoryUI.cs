@@ -42,6 +42,6 @@ public class PlayerInventoryUI : MonoBehaviour, IInventoryUI
     {
         bool newState = !inventoryPanel.activeSelf;
         inventoryPanel.SetActive(newState);
-        CameraOrbit.Instance?.SetLookEnabled(!newState);
+        MenuStateEvents.SetMenuOpen(newState);
     }
 }

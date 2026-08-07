@@ -5,26 +5,27 @@ public class FishMeter : MonoBehaviour
     [SerializeField] private ProgressBar FishingProgress;
 
     public float advanceSpeed = 0.1f;
-    public float decaySpeed = 0.05f;
+    public float decaySpeed = 0.1f;
+    private float startingProgress = 0.5f;
+    
 
 
-    public bool Advance()
+    public int Advance(bool hit, float progress)
     {
-        if (FishingProgress.UpdateProgress(-advanceSpeed)){
-            return true;
-        }
-        return false;
-    }
-
-    public void Decay()
-    {
-        if (FishingProgress.UpdateProgress(decaySpeed))
+        if (hit)
         {
-
+            return FishingProgress.UpdateProgress(-progress / 2);
         }
+        else
+        {
+            return FishingProgress.UpdateProgress(progress/2);
+        }
+        
     }
+
+   
     public void ResetProgress()
     {
-        FishingProgress.SetProgress(0.5f);
+        FishingProgress.SetProgress(startingProgress);
     }
 }

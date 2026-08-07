@@ -25,6 +25,20 @@ public class CameraOrbit : MonoBehaviour
         }
         Instance = this;
     }
+    private void OnEnable()
+    {
+        MenuStateEvents.OnMenuStateChanged += HandleMenuStateChanged;
+    }
+
+    private void OnDisable()
+    {
+        MenuStateEvents.OnMenuStateChanged -= HandleMenuStateChanged;
+    }
+
+    private void HandleMenuStateChanged(bool menuOpen)
+    {
+        SetLookEnabled(!menuOpen);
+    }
 
     void Start()
     {

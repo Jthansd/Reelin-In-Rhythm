@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class Fisherman : MonoBehaviour
@@ -5,6 +6,7 @@ public class Fisherman : MonoBehaviour
     AnimatedController animator;
     [SerializeField] FishingController fishingController;
 
+    private bool menuOpen = false;
 
     private void Awake()
     {
@@ -12,11 +14,36 @@ public class Fisherman : MonoBehaviour
         Debug.Assert(animator != null, "AnimatedController component is missing from the GameObject.");
         fishingController = FindAnyObjectByType<FishingController>();
         Debug.Assert(fishingController != null, "FishingController not found in scene.");
-
     }
+
+    private void OnEnable()
+    {
+        MenuStateEvents.OnMenuStateChanged += HandleMenuStateChanged;
+    }
+
+    private void OnDisable()
+    {
+        MenuStateEvents.OnMenuStateChanged -= HandleMenuStateChanged;
+    }
+
+    private void HandleMenuStateChanged(bool isOpen)
+    {
+        menuOpen = isOpen;
+    }
+
+    private bool CanCast()
+    {
+        if (menuOpen) return false;
+
+        FishingState state = fishingController.CurrentState;
+        return state == FishingState.Idle || state == FishingState.WaitingForBite;
+    }
+
     public void Cast()
     {
-        if(animator.GetComponent<Animator>().GetBool("isFishing"))
+        if (!CanCast()) return;
+
+        if (animator.GetComponent<Animator>().GetBool("isFishing"))
         {
             Debug.Log("Reeling in the fishing line...");
             animator.SetBool("isFishing", false);
@@ -25,7 +52,6 @@ public class Fisherman : MonoBehaviour
         }
         Debug.Log("Casting the fishing line...");
         animator.SetTrigger("Cast");
-
     }
 
     public void OnCastRelease()
@@ -39,7 +65,6 @@ public class Fisherman : MonoBehaviour
     {
         animator.SetBool("isFishing", false);
         animator.SetBool("isReeling", false);
-        fishingController.ReeledIn();
     }
 
     public void StartReeling()

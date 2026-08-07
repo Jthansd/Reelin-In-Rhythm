@@ -18,6 +18,6 @@ MonoBehaviour:
   itemID: 00962856-ce4c-4ee3-9a20-37b36509b0ac
   value: 10
   equipmentType: 0
-  catchStrengthBonus: 1
-  luckBonus: 1
-  rarityBonus: 2
+  catchStrengthBonus: 15
+  luckBonus: 0
+  rarityBonus: 15

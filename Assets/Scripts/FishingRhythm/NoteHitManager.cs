@@ -1,10 +1,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Controls;
 
 public class NoteHitManager : MonoBehaviour
 {
-    private List<List<NoteTiming>> spawnTimes = new List<List<NoteTiming>>();
+    private List<NoteTiming> spawnTimes; 
     private int nextNoteIndex = 0;
     private float spawnLeadTime;
     private float hitWindow = 15f;
@@ -22,9 +23,14 @@ public class NoteHitManager : MonoBehaviour
     private float holdStartTime = 0f;
     private GameObject holdingNote = null;
 
+    private KeyControl alternativeKey;
+
+
     private void Awake()
     {
         Instance = this;
+        alternativeKey = Keyboard.current.leftArrowKey;
+
     }
 
     void Start()
@@ -42,7 +48,7 @@ public class NoteHitManager : MonoBehaviour
         if (!reelWheel.IsPlaying())
             return;
 
-        List<NoteTiming> easyTimings = spawnTimes[0];
+        List<NoteTiming> easyTimings = spawnTimes;
 
         if (nextNoteIndex >= easyTimings.Count)
             return;
@@ -59,10 +65,9 @@ public class NoteHitManager : MonoBehaviour
 
     public void GetSpawnTimes()
     {
-        spawnTimes.Clear();
-        spawnTimes.Add(MusicController.Instance.GetNoteTimingsForDifficulty("easy"));
-        spawnTimes.Add(MusicController.Instance.GetNoteTimingsForDifficulty("medium"));
-        spawnTimes.Add(MusicController.Instance.GetNoteTimingsForDifficulty("hard"));
+
+        spawnTimes = MusicController.Instance.GetNoteTimings();
+        
     }
 
     public void RegisterNote(GameObject note)
@@ -100,34 +105,100 @@ public class NoteHitManager : MonoBehaviour
             case NoteType.Hold:
                 CheckHoldInput(front, noteComp);
                 break;
+            case NoteType.Altkey:
+            // Handle Altkey input if needed
+                CheckTapInput(front);
+                break;
+            case NoteType.Skip:
+                // Handle Skip input if needed
+                CheckSkipInput(front);
+                break;
         }
     }
+
+    
 
     public void CheckInput()
     {
         // Tap/Hold handling now lives in HandleFrontNote(), called every frame from this script's own Update().
     }
 
-    private void CheckTapInput(GameObject note)
+    private void CheckSkipInput(GameObject note)
     {
         if (Keyboard.current.spaceKey.wasPressedThisFrame)
         {
-            string result = IsNoteInHitWindow(note);
-            if (result == NOTE_RESULTS[0])
+            Debug.Log("ACTED ON SKIP!");
+            reelWheel.UpdateFishDistance(false);
+            UnregisterNote(note);
+            Destroy(note);
+            return;
+        }
+
+        if(IsTooLate(note))
+        {
+            Debug.Log("SKIP SUCCESS!");
+            reelWheel.UpdateFishDistance(true);
+            UnregisterNote(note);
+            Destroy(note);
+        }
+    }
+
+    private void CheckTapInput(GameObject note)
+    {
+        NoteType noteType = note.GetComponentInChildren<ReelWheelNote>().noteType;
+        if (Keyboard.current.spaceKey.wasPressedThisFrame)
+        {
+            if(noteType == NoteType.Altkey)
             {
-                Debug.Log(NOTE_RESULTS[0]);
-                reelWheel.UpdateFishDistance(true);
+                Debug.Log("Wrong Key!");
+                reelWheel.UpdateFishDistance(false);
             }
             else
             {
-                Debug.Log("MISS!");
-                reelWheel.UpdateFishDistance(false);
+                string result = IsNoteInHitWindow(note);
+                if (result == NOTE_RESULTS[0])
+                {
+                    Debug.Log(NOTE_RESULTS[0]);
+                    reelWheel.UpdateFishDistance(true);
+                }
+                else
+                {
+                    Debug.Log("MISS!");
+                    reelWheel.UpdateFishDistance(false);
+                }
             }
 
             UnregisterNote(note);
             Destroy(note);
             return;
+
         }
+        else if (alternativeKey.wasPressedThisFrame)
+        {
+            if (noteType == NoteType.Tap)
+            {
+                Debug.Log("Wrong Key!");
+                reelWheel.UpdateFishDistance(false);
+            }
+            else
+            {
+                string result = IsNoteInHitWindow(note);
+                if (result == NOTE_RESULTS[0])
+                {
+                    Debug.Log(NOTE_RESULTS[0]);
+                    reelWheel.UpdateFishDistance(true);
+                }
+                else
+                {
+                    Debug.Log("MISS!");
+                    reelWheel.UpdateFishDistance(false);
+                }
+            }
+            UnregisterNote(note);
+            Destroy(note);
+            return;
+        }
+
 
         if (IsTooLate(note))
         {

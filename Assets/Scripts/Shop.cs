@@ -111,18 +111,20 @@ public class Shop : MonoBehaviour
     public void OpenShop()
     {
         SetSoloActive("default");
-
-        CameraOrbit.Instance?.SetLookEnabled(false);
+        MenuStateEvents.SetMenuOpen(true);
 
         Debug.Log("Shop opened.");
     }
+
+
+
 
     public void CloseShop()
     {
         PreventStealing();
         SetAllInactive();
+        MenuStateEvents.SetMenuOpen(false);
 
-        CameraOrbit.Instance?.SetLookEnabled(true);
         Debug.Log("Shop closed.");
     }
 
