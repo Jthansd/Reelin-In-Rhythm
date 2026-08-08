@@ -231,7 +231,7 @@ public class FishingController : MonoBehaviour
     public FishItem.Rarity DetermineRarity()
     {
         Debug.Log("Determine Rarity was called");
-        int strength = playerStats.RarityStrength;
+        float strength = playerStats.RarityStrength;
 
         List<(FishItem.Rarity rarity, float weight)> weightedPool = new();
         float totalWeight = 0f;

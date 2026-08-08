@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: QuickReel
   m_EditorClassIdentifier: Assembly-CSharp::EquipmentItem
   itemName: Quick Reel
-  itemDescription: This reel will help my reel speed
+  itemDescription: Increases your Catch Strength by 25%
   icon: {fileID: 21300000, guid: 6cbc18e8977cf874ca89ba97d923c031, type: 3}
   itemID: c6b95eb1-e2ea-4b7d-843f-590af475f00d
   value: 7
   equipmentType: 1
-  catchStrengthBonus: 7
+  catchStrengthMultiplier: 1.25
   luckBonus: 0
-  rarityBonus: 0
+  rarityMultiplier: 1

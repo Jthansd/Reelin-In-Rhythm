@@ -9,5 +9,7 @@ public static class MenuStateEvents
     public static void SetMenuOpen(bool isOpen)
     {
         OnMenuStateChanged?.Invoke(isOpen);
+
+
     }
 }

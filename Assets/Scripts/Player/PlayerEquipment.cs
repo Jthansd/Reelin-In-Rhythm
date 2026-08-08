@@ -6,46 +6,26 @@ public class PlayerEquipment : MonoBehaviour
     [SerializeField] private EquipmentManager equipmentManager;
     [SerializeField] private Inventory playerInventory;
 
-    // convenience accessors, if other scripts want "the rod" by name
     public EquipmentItem Rod => equipmentManager.GetEquipped(EquipmentItem.EquipmentType.Rod);
     public EquipmentItem Reel => equipmentManager.GetEquipped(EquipmentItem.EquipmentType.Reel);
     public EquipmentItem Line => equipmentManager.GetEquipped(EquipmentItem.EquipmentType.Line);
     public EquipmentItem Hook => equipmentManager.GetEquipped(EquipmentItem.EquipmentType.Hook);
     public EquipmentItem Bait => equipmentManager.GetEquipped(EquipmentItem.EquipmentType.Bait);
 
-    
-    private void OnEnable()
-    {
-        //equipmentManager.OnEquipmentChanged.AddListener(HandleEquipmentChanged);
-    }
-
-    private void OnDisable()
-    {
-        //equipmentManager.OnEquipmentChanged.RemoveListener(HandleEquipmentChanged);
-    }
-
-    //private void HandleEquipmentChanged(EquipmentItem.EquipmentType type)
-    //{
-    //    EquipmentItem item = equipmentManager.GetEquipped(type);
-    //    if (item != null)
-    //        ApplyEquipmentBonus(item);
-    //}
-
     public void EquipItem(EquipmentItem equipmentItem)
     {
         EquipmentItem oldItem = equipmentManager.GetEquipped(equipmentItem.getEquipmentType);
 
         if (oldItem != null)
-            RemoveEquipmentBonus(oldItem); // undo old item's stats before swapping
+            RemoveEquipmentBonus(oldItem);
 
-        if(equipmentItem.getEquipmentType == EquipmentItem.EquipmentType.Bait)
+        if (equipmentItem.getEquipmentType == EquipmentItem.EquipmentType.Bait)
         {
-            // Bait is consumed on use, so we don't apply its stat bonus when equipping
-            // Instead, we will apply the bait's bonus when it is consumed during fishing
+            // Bait is consumed on use - its bonus is applied at cast time, not equip time.
         }
         else
         {
-            ApplyEquipmentBonus(equipmentItem); // apply new item's stats
+            ApplyEquipmentBonus(equipmentItem);
         }
 
         equipmentManager.SwapEquipment(equipmentItem);
@@ -53,27 +33,24 @@ public class PlayerEquipment : MonoBehaviour
 
     private void ApplyEquipmentBonus(EquipmentItem item)
     {
-        playerStats.AdjustStat(PlayerStats.StatType.CatchStrength, item.CatchStrengthBonus);
-        playerStats.AdjustStat(PlayerStats.StatType.Luck, item.LuckBonus);
-        playerStats.AdjustStat(PlayerStats.StatType.RarityStrength, item.RarityBonus);
+        string slotKey = item.getEquipmentType.ToString();
+        playerStats.SetCatchStrengthMultiplier(slotKey, item.CatchStrengthMultiplier);
+        playerStats.SetRarityMultiplier(slotKey, item.RarityMultiplier);
+        playerStats.AdjustLuck(item.LuckBonus);
     }
 
     private void RemoveEquipmentBonus(EquipmentItem item)
     {
-        playerStats.AdjustStat(PlayerStats.StatType.CatchStrength, -item.CatchStrengthBonus);
-        playerStats.AdjustStat(PlayerStats.StatType.Luck, -item.LuckBonus);
-        playerStats.AdjustStat(PlayerStats.StatType.RarityStrength, -item.RarityBonus);
+        string slotKey = item.getEquipmentType.ToString();
+        playerStats.ClearCatchStrengthMultiplier(slotKey);
+        playerStats.ClearRarityMultiplier(slotKey);
+        playerStats.AdjustLuck(-item.LuckBonus);
     }
 
     private void UnequipItem(EquipmentItem.EquipmentType type)
     {
         EquipmentItem item = equipmentManager.GetEquipped(type);
-        if (type == EquipmentItem.EquipmentType.Bait)
-        {
-            //Unequip bait without removing stat buff since it is consumed on use
-           
-        }
-        else
+        if (type != EquipmentItem.EquipmentType.Bait)
         {
             RemoveEquipmentBonus(item);
         }
@@ -85,7 +62,9 @@ public class PlayerEquipment : MonoBehaviour
         EquipmentItem bait = Bait;
         if (bait != null)
         {
-            playerStats.ApplyBaitBuff(bait);
+            playerStats.SetCatchStrengthMultiplier("Bait", bait.CatchStrengthMultiplier);
+            playerStats.SetRarityMultiplier("Bait", bait.RarityMultiplier);
+            playerStats.AdjustLuck(bait.LuckBonus);
         }
     }
 
@@ -93,47 +72,41 @@ public class PlayerEquipment : MonoBehaviour
     {
         if (bait != null)
         {
-            playerStats.RevertBaitBuff(bait);
+            playerStats.ClearCatchStrengthMultiplier("Bait");
+            playerStats.ClearRarityMultiplier("Bait");
+            playerStats.AdjustLuck(-bait.LuckBonus);
         }
     }
 
     public void RevertBaitBuff()
     {
-        EquipmentItem bait = Bait;
-        if (bait != null)
-        {
-            playerStats.RevertBaitBuff(bait);
-        }
+        RevertBaitBuff(Bait);
     }
+
     public bool ConsumeBait(out EquipmentItem baitUsed)
-    { 
+    {
         EquipmentItem bait = Bait;
         bool consumed = false;
         baitUsed = null;
-        if (playerInventory.HasItem(bait)) //if player has bait equipped
+        if (playerInventory.HasItem(bait))
         {
             int baitQuantity = playerInventory.GetItemQuantity(bait);
-            if(baitQuantity > 0) //if player has at least 1 bait
+            if (baitQuantity > 0)
             {
                 baitUsed = bait;
-                consumed = true; 
-                if(baitQuantity == 1) //if player has only 1 bait
+                consumed = true;
+                if (baitQuantity == 1)
                 {
                     UnequipItem(bait.getEquipmentType);
-                    //player had bait and it was consumed
+                }
 
-                }          
-                
-                playerInventory.RemoveItem(bait); //remove 1 bait
-                
-
+                playerInventory.RemoveItem(bait);
             }
-           
         }
         else
         {
-            consumed = false; //player does not have bait equipped
+            consumed = false;
         }
-            return consumed; 
+        return consumed;
     }
 }

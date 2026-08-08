@@ -13,11 +13,12 @@ MonoBehaviour:
   m_Name: WormsBait
   m_EditorClassIdentifier: Assembly-CSharp::EquipmentItem
   itemName: Worms
-  itemDescription: These little wiggly guys should do the trick
+  itemDescription: Consumed on hooking a fish. Increases your Catch Strength and
+    chance of catching a rare fish by 25%. Increases your luck very slightly.
   icon: {fileID: 21300000, guid: 7cb30df394856d74a81a3ef87972090b, type: 3}
   itemID: 168ea272-0e0c-4f24-8c9c-20e04806ea48
   value: 1
   equipmentType: 2
-  catchStrengthBonus: 0
+  catchStrengthMultiplier: 1.25
   luckBonus: 1
-  rarityBonus: 0
+  rarityMultiplier: 1.25

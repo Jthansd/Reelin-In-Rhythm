@@ -4,13 +4,9 @@ using UnityEngine;
 public class EquipmentItem : Item
 {
     [SerializeField] private EquipmentType equipmentType;
-
-    [SerializeField] private int catchStrengthBonus;
-
-    [SerializeField] private int luckBonus;
-
-    [SerializeField] private int rarityBonus;
-
+    [SerializeField] private float catchStrengthMultiplier = 1.0f; // e.g. 1.15 = +15%
+    [SerializeField] private int luckBonus = 0; // stays additive
+    [SerializeField] private float rarityMultiplier = 1.0f;
 
     public enum EquipmentType
     {
@@ -22,13 +18,7 @@ public class EquipmentItem : Item
     }
 
     public EquipmentType getEquipmentType => equipmentType;
-
-    public int CatchStrengthBonus => catchStrengthBonus;
-
+    public float CatchStrengthMultiplier => catchStrengthMultiplier;
     public int LuckBonus => luckBonus;
-
-    public int RarityBonus => rarityBonus;
-
-
-
+    public float RarityMultiplier => rarityMultiplier;
 }

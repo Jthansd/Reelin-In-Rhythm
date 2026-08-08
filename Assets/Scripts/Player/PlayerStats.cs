@@ -1,63 +1,56 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerStats : MonoBehaviour
 {
     public enum StatType { Luck, CatchStrength, RarityStrength }
-    [SerializeField] private int luck; //bonus to how often the player will hook a fish
-    [SerializeField] private int catchStrength; //reel speed. How fast the player can reel in fish
-    [SerializeField] private int rarityStrength; //higher the rarity strength, the rarer the fish the player can hook
+
+    [SerializeField] private int luck = 1;
+    [SerializeField] private float baseCatchStrength = 10f;
+    [SerializeField] private float baseRarityStrength = 1f;
+
+    // Keyed by an arbitrary source id (equipment slot name, buff id, etc.)
+    // so any future permanent buff can register its own multiplier without touching this class.
+    private Dictionary<string, float> catchStrengthMultipliers = new();
+    private Dictionary<string, float> rarityMultipliers = new();
 
     public int Luck => luck;
-    public int CatchStrength => catchStrength;
-    public int RarityStrength => rarityStrength;
+    public float CatchStrength => baseCatchStrength * Product(catchStrengthMultipliers);
+    public float RarityStrength => baseRarityStrength * Product(rarityMultipliers);
 
-    //public static PlayerStats Instance { get; private set; }
-    
-    //private void Awake()
-    //{
-    //    Instance = this;
-    //}
-
-    public void AdjustStat(StatType bonusType, int bonusStrength)
+    private float Product(Dictionary<string, float> mods)
     {
-        
-        ref int stat = ref GetStatReference(bonusType);
-        Debug.Log(bonusType.ToString() + " stat before adjustment: " + stat);
-        stat += bonusStrength;
-        Debug.Log("After adjustment " + stat);
+        float result = 1f;
+        foreach (var value in mods.Values)
+            result *= value;
+        return result;
     }
 
-    private ref int GetStatReference(StatType type)
+    public void AdjustLuck(int bonusStrength)
     {
-        switch (type)
-        {
-            case StatType.Luck:
-                return ref luck;
-            case StatType.CatchStrength:
-                return ref catchStrength;
-            case StatType.RarityStrength:
-                return ref rarityStrength;
-            default:
-                throw new ArgumentOutOfRangeException(nameof(type));
-        }
+        Debug.Log("Luck before adjustment: " + luck);
+        luck += bonusStrength;
+        Debug.Log("Luck after adjustment: " + luck);
     }
 
-
-    public void ApplyBaitBuff(EquipmentItem bait)
+    public void SetCatchStrengthMultiplier(string sourceId, float multiplier)
     {
-        AdjustStat(StatType.Luck, bait.LuckBonus);
-        AdjustStat(StatType.CatchStrength, bait.CatchStrengthBonus);
-        AdjustStat(StatType.RarityStrength, bait.RarityBonus);
+        catchStrengthMultipliers[sourceId] = multiplier;
     }
 
-    public void RevertBaitBuff(EquipmentItem bait)
+    public void ClearCatchStrengthMultiplier(string sourceId)
     {
-        AdjustStat(StatType.Luck, -bait.LuckBonus);
-        AdjustStat(StatType.CatchStrength, -bait.CatchStrengthBonus);
-        AdjustStat(StatType.RarityStrength, -bait.RarityBonus);
+        catchStrengthMultipliers.Remove(sourceId);
     }
 
+    public void SetRarityMultiplier(string sourceId, float multiplier)
+    {
+        rarityMultipliers[sourceId] = multiplier;
+    }
 
-
+    public void ClearRarityMultiplier(string sourceId)
+    {
+        rarityMultipliers.Remove(sourceId);
+    }
 }

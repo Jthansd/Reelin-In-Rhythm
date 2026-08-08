@@ -2042,6 +2042,8 @@ MonoBehaviour:
   buyInventory: {fileID: 1303353927}
   sellInventory: {fileID: 955293725}
   shop: {fileID: 705149433}
+  toolTipPrefab: {fileID: 5821555038106840519, guid: 1c64848273fca2149be9e9e041176efe, type: 3}
+  canvasTransform: {fileID: 2037963413}
 --- !u!1 &650475533
 GameObject:
   m_ObjectHideFlags: 0
@@ -3406,7 +3408,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15bb05d9d0c00134b94fce074d4b8a2c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Inventory
-  inventorySlots: []
+  inventorySlots:
+  - item: {fileID: 11400000, guid: efa6b4ed034957544b971e161c519e80, type: 2}
+    itemQuantity: 2
 --- !u!143 &1047523022
 CharacterController:
   m_ObjectHideFlags: 0
@@ -3456,9 +3460,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 30b4c2fd8c8d38543a7bd1018a1e71f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerStats
-  luck: 5
-  catchStrength: 10
-  rarityStrength: 10
+  luck: 1
+  baseCatchStrength: 10
+  baseRarityStrength: 10
 --- !u!114 &1047523026
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3790,6 +3794,8 @@ MonoBehaviour:
   slotPrefab: {fileID: 5416422909298721797, guid: 18db9c215cc08f740becaed3960b0e69, type: 3}
   inventoryPanel: {fileID: 191263174}
   thisInventory: {fileID: 1047523020}
+  slotPopupPrefab: {fileID: 5821555038106840519, guid: 1c64848273fca2149be9e9e041176efe, type: 3}
+  canvasTransform: {fileID: 2037963413}
 --- !u!1 &1281586418
 GameObject:
   m_ObjectHideFlags: 0
@@ -4806,6 +4812,8 @@ MonoBehaviour:
   buyInventory: {fileID: 1303353927}
   sellInventory: {fileID: 955293725}
   shop: {fileID: 705149433}
+  toolTipPrefab: {fileID: 5821555038106840519, guid: 1c64848273fca2149be9e9e041176efe, type: 3}
+  canvasTransform: {fileID: 2037963413}
 --- !u!1 &1935645023
 GameObject:
   m_ObjectHideFlags: 0

@@ -4,7 +4,7 @@ using UnityEngine.UI;
 using TMPro;
 using System;
 
-public class InventorySlotUI : MonoBehaviour, IPointerClickHandler
+public class InventorySlotUI : MonoBehaviour, IPointerClickHandler, IPointerEnterHandler, IPointerExitHandler
 {
     [SerializeField] private Image icon;
     [SerializeField] private TextMeshProUGUI qtyText;
@@ -13,6 +13,8 @@ public class InventorySlotUI : MonoBehaviour, IPointerClickHandler
     private Inventory ownerInventory;
 
     public event Action<InventorySlot, Inventory> OnSlotClicked;
+    public event Action<InventorySlot, Inventory, Vector2> OnSlotHoverEnter;
+    public event Action<InventorySlot, Inventory> OnSlotHoverExit;
 
     public void Bind(InventorySlot slot, Inventory owner)
     {
@@ -35,5 +37,16 @@ public class InventorySlotUI : MonoBehaviour, IPointerClickHandler
     public void OnPointerClick(PointerEventData eventData)
     {
         OnSlotClicked?.Invoke(boundSlot, ownerInventory);
+    }
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        Vector2 screenPos = eventData.position;
+        OnSlotHoverEnter?.Invoke(boundSlot, ownerInventory, eventData.position);
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        OnSlotHoverExit?.Invoke(boundSlot, ownerInventory);
     }
 }

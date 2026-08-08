@@ -13,11 +13,12 @@ MonoBehaviour:
   m_Name: Leaf Rod
   m_EditorClassIdentifier: Assembly-CSharp::EquipmentItem
   itemName: Leaf Rod
-  itemDescription: Made from a stick, a leaf is still attached
+  itemDescription: Increases Catch Strength by 15% and your chance of catching rare
+    fish by 25%
   icon: {fileID: 21300000, guid: e60187ef8745e3345a0fcc9832be7da2, type: 3}
   itemID: 00962856-ce4c-4ee3-9a20-37b36509b0ac
   value: 10
   equipmentType: 0
-  catchStrengthBonus: 15
+  catchStrengthMultiplier: 1.15
   luckBonus: 0
-  rarityBonus: 15
+  rarityMultiplier: 1.25
