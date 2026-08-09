@@ -10,8 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 43a4a4f9f81c1db4e98f8d5ef360c91d, type: 3}
-  m_Name: Reelin'SampleMedium
+  m_Name: Reelin'AcousticHard
   m_EditorClassIdentifier: Assembly-CSharp::MusicStats
-  music: {fileID: 8300000, guid: 9cae2040ed6806347945d3679d60116b, type: 3}
-  hitTimings: {fileID: 11400000, guid: 7e726916dfefe0745bbc722ff33a17dc, type: 2}
-  bpm: 130
+  music: {fileID: 8300000, guid: 6ec54eea3cf9ae443a48ffdd585b096a, type: 3}
+  hitTimings: {fileID: 11400000, guid: d236f8955f826214e94bebba88d7ac34, type: 2}
+  bpm: 80

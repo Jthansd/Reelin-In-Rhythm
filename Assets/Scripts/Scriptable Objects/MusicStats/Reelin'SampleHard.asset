@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MusicStats
   music: {fileID: 8300000, guid: 9cae2040ed6806347945d3679d60116b, type: 3}
   hitTimings: {fileID: 11400000, guid: 35fd946252c094b4b83ae4f719d3fade, type: 2}
+  bpm: 130

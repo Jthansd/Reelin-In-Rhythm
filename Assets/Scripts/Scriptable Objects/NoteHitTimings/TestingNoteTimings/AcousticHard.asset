@@ -1,0 +1,107 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b984f902ade29f244b412ebc016ffe4d, type: 3}
+  m_Name: AcousticHard
+  m_EditorClassIdentifier: Assembly-CSharp::NoteHitTimings
+  noteTimings:
+  - hitTime: 1.5
+    noteType: 0
+    releaseTime: 0
+  - hitTime: 1.87
+    noteType: 0
+    releaseTime: 0
+  - hitTime: 2.25
+    noteType: 1
+    releaseTime: 2.81
+  - hitTime: 3
+    noteType: 0
+    releaseTime: 0
+  - hitTime: 3.18
+    noteType: 0
+    releaseTime: 0
+  - hitTime: 3.75
+    noteType: 0
+    releaseTime: 0
+  - hitTime: 4.12
+    noteType: 1
+    releaseTime: 4.68
+  - hitTime: 4.87
+    noteType: 0
+    releaseTime: 0
+  - hitTime: 5.25
+    noteType: 0
+    releaseTime: 0
+  - hitTime: 5.81
+    noteType: 0
+    releaseTime: 0
+  - hitTime: 6
+    noteType: 0
+    releaseTime: 0
+  - hitTime: 6.18
+    noteType: 0
+    releaseTime: 0
+  - hitTime: 7.68
+    noteType: 0
+    releaseTime: 0
+  - hitTime: 7.87
+    noteType: 0
+    releaseTime: 0
+  - hitTime: 8.06
+    noteType: 0
+    releaseTime: 0
+  - hitTime: 8.25
+    noteType: 0
+    releaseTime: 0
+  - hitTime: 8.81
+    noteType: 0
+    releaseTime: 0
+  - hitTime: 9
+    noteType: 0
+    releaseTime: 0
+  - hitTime: 9.18
+    noteType: 0
+    releaseTime: 0
+  - hitTime: 9.56
+    noteType: 0
+    releaseTime: 0
+  - hitTime: 9.75
+    noteType: 1
+    releaseTime: 10.5
+  - hitTime: 10.68
+    noteType: 0
+    releaseTime: 0
+  - hitTime: 10.87
+    noteType: 0
+    releaseTime: 0
+  - hitTime: 11.06
+    noteType: 0
+    releaseTime: 0
+  - hitTime: 11.25
+    noteType: 0
+    releaseTime: 0
+  - hitTime: 11.43
+    noteType: 0
+    releaseTime: 0
+  - hitTime: 11.62
+    noteType: 0
+    releaseTime: 0
+  - hitTime: 11.81
+    noteType: 0
+    releaseTime: 0
+  - hitTime: 12
+    noteType: 1
+    releaseTime: 12.37
+  - hitTime: 12.75
+    noteType: 0
+    releaseTime: 0
+  timingDifficulty: 2
+  noteList: 1.50,1.87,2.25:hold:2.81,3.00,3.18,3.75,4.12:hold:4.68,4.87,5.25,5.81,6.00,6.18,7.68,7.87,8.06,8.25,8.81,9.00,9.18,9.56,9.75:hold:10.50,10.68,10.87,11.06,11.25,11.43,11.62,11.81,12.00:hold:12.37,12.75:hold13.12

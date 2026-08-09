@@ -26,6 +26,16 @@ public class InventorySlotUI : MonoBehaviour, IPointerClickHandler, IPointerEnte
             icon.sprite = slot.item.Icon;
             icon.enabled = true;
             qtyText.text = slot.itemQuantity > 1 ? slot.itemQuantity.ToString() : "";
+
+            if (slot.item is FishItem fish && FishOPedia.Instance != null)
+            {
+                bool discovered = FishOPedia.Instance.IsDiscovered(fish);
+                icon.color = discovered ? Color.white : Color.black;
+            }
+            else
+            {
+                icon.color = Color.white; // non-fish items (player/shop inventories) always show normally
+            }
         }
         else
         {

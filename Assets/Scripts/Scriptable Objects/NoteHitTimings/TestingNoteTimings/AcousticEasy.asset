@@ -1,0 +1,77 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b984f902ade29f244b412ebc016ffe4d, type: 3}
+  m_Name: AcousticEasy
+  m_EditorClassIdentifier: Assembly-CSharp::NoteHitTimings
+  noteTimings:
+  - hitTime: 1.5
+    noteType: 0
+    releaseTime: 0
+  - hitTime: 2.06
+    noteType: 1
+    releaseTime: 2.62
+  - hitTime: 3
+    noteType: 0
+    releaseTime: 0
+  - hitTime: 3.37
+    noteType: 0
+    releaseTime: 0
+  - hitTime: 3.75
+    noteType: 0
+    releaseTime: 0
+  - hitTime: 4.5
+    noteType: 0
+    releaseTime: 0
+  - hitTime: 5.06
+    noteType: 1
+    releaseTime: 5.62
+  - hitTime: 6
+    noteType: 0
+    releaseTime: 0
+  - hitTime: 6.37
+    noteType: 0
+    releaseTime: 0
+  - hitTime: 6.75
+    noteType: 0
+    releaseTime: 0
+  - hitTime: 7.5
+    noteType: 0
+    releaseTime: 0
+  - hitTime: 8.06
+    noteType: 1
+    releaseTime: 8.62
+  - hitTime: 9
+    noteType: 0
+    releaseTime: 0
+  - hitTime: 9.37
+    noteType: 0
+    releaseTime: 0
+  - hitTime: 9.75
+    noteType: 0
+    releaseTime: 0
+  - hitTime: 10.5
+    noteType: 0
+    releaseTime: 0
+  - hitTime: 11.06
+    noteType: 1
+    releaseTime: 11.62
+  - hitTime: 12
+    noteType: 0
+    releaseTime: 0
+  - hitTime: 12.37
+    noteType: 0
+    releaseTime: 0
+  - hitTime: 12.75
+    noteType: 0
+    releaseTime: 0
+  timingDifficulty: 0
+  noteList: '1.50,2.06:hold:2.62,3.00,3.37,3.75,4.50,5.06:hold:5.62,6.00,6.37,6.75,7.50,8.06:hold:8.62,9.00,9.37,9.75,10.50,11.06:hold:11.62,12.00,12.37,12.75 '

@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 275f42c22ea186a4e980934ae86f222d, type: 3}
-  m_Name: SuperRareFish
+  m_Name: FlounderFourString
   m_EditorClassIdentifier: Assembly-CSharp::FishItem
-  itemName: Super Rare Fish
-  itemDescription: The fish... its super rare
-  icon: {fileID: 21300000, guid: 6433a417b025801409eaedca3b65c357, type: 3}
-  itemID: 3d7b87a5-bc8a-48e9-8aa8-19b3b600133d
-  value: 0
-  sellValue: 20
-  rarityType: 3
-  customDifficultyMultiplier: 1.5
+  itemName: Four-String Flounder
+  itemDescription: At first I thought this was a bass
+  icon: {fileID: 21300000, guid: 8b043851c958f4c429c216e542faaaf6, type: 3}
+  itemID: 4cfc725e-7b28-4db6-bf9e-e622032ae4ea
+  value: 10
+  sellValue: 10
+  rarityType: 2
+  customDifficultyMultiplier: 1.25

@@ -189,6 +189,7 @@ public class ReelWheel : MonoBehaviour
     public void StartReelWheel()
     {
         MusicController.Instance.OnStartReelWheel();
+        SetBPM(MusicController.Instance.GetCurrentBPM());
         CameraOrbit.Instance.SetLookEnabled(false);
         fishMeter.ResetProgress();
         reelWheelUI.SetActive(true);
@@ -246,5 +247,10 @@ public class ReelWheel : MonoBehaviour
             Debug.Log("Fish caught!");
             OnReelComplete?.Invoke(true);
         }
+    }
+
+    public void SetBPM(float bpm)
+    {
+        this.bpm = bpm;
     }
 }

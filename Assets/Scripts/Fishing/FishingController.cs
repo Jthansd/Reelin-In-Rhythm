@@ -35,6 +35,7 @@ public class FishingController : MonoBehaviour
 
     // Fired when a fishing encounter ends, either way. bool = was the fish caught.
     public event Action<bool> OnFishingEncounterEnded;
+    public event Action<string> OnFishCaught;
 
     private void Update()
     {
@@ -45,6 +46,7 @@ public class FishingController : MonoBehaviour
     {
         WaterController.OnBobberEnteredWater += HandleBobberEntered;
         reelWheel.OnReelComplete += HandleReelComplete;
+
     }
 
     private void OnDisable()
@@ -272,6 +274,7 @@ public class FishingController : MonoBehaviour
         Debug.Log($"Adding {currentFish.name} to inventory.");
         playerInventory.AddItem(currentFish);
         playerEquipment.RevertBaitBuff(currentBait);
+        OnFishCaught?.Invoke(currentFish.ItemID);
     }
 
     public float GetProgress()

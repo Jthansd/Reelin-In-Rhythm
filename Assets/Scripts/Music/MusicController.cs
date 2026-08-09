@@ -11,6 +11,7 @@ public class MusicController : MonoBehaviour
     private AudioSource audioSource;
     private NoteHitTimings currentNoteHitTimings;
     private MusicStats currentMusicStats;
+    private int currentBpm = 100;
 
     public static MusicController Instance { get; private set; }
     public event Action OnSongFinished;
@@ -80,6 +81,8 @@ public class MusicController : MonoBehaviour
     public void OnStartReelWheel()
     {
         SetSong(currentMusicStats);
+        currentBpm = GetBPM();
+        
 
         PlayMusic();
     }
@@ -106,4 +109,16 @@ public class MusicController : MonoBehaviour
             currentNoteHitTimings = currentMusicStats.HitTimings;
         }
     }
+
+
+    private int GetBPM()
+    {
+        return currentMusicStats.Bpm;
+    }
+
+    public int GetCurrentBPM()
+    {
+        return currentBpm;
+    }
+
 }
