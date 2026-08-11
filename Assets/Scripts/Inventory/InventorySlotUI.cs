@@ -16,7 +16,7 @@ public class InventorySlotUI : MonoBehaviour, IPointerClickHandler, IPointerEnte
     public event Action<InventorySlot, Inventory, Vector2> OnSlotHoverEnter;
     public event Action<InventorySlot, Inventory> OnSlotHoverExit;
 
-    public void Bind(InventorySlot slot, Inventory owner)
+    public void Bind(InventorySlot slot, Inventory owner, bool applyDiscoveryTint = false)
     {
         boundSlot = slot;
         ownerInventory = owner;
@@ -27,14 +27,14 @@ public class InventorySlotUI : MonoBehaviour, IPointerClickHandler, IPointerEnte
             icon.enabled = true;
             qtyText.text = slot.itemQuantity > 1 ? slot.itemQuantity.ToString() : "";
 
-            if (slot.item is FishItem fish && FishOPedia.Instance != null)
+            if (applyDiscoveryTint && slot.item is FishItem fish && FishOPedia.Instance != null)
             {
                 bool discovered = FishOPedia.Instance.IsDiscovered(fish);
                 icon.color = discovered ? Color.white : Color.black;
             }
             else
             {
-                icon.color = Color.white; // non-fish items (player/shop inventories) always show normally
+                icon.color = Color.white;
             }
         }
         else

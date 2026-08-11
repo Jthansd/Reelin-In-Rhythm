@@ -6,9 +6,6 @@ public class FishOPedia : MonoBehaviour
 
     [SerializeField] ItemDatabase obtainableFish;
 
-
-   
-
     [SerializeField] FishingController fishingController;
 
     private HashSet<string> discoveredFishIds = new();
@@ -87,5 +84,8 @@ public class FishOPedia : MonoBehaviour
         return fishList;
 
     }
+
+    // in FishOPedia.cs
+    public List<Item> GetAllObtainableFishOfRarity(FishItem.Rarity rarity) => obtainableFish.GetAllItemsOfRarity(rarity);
 
 }

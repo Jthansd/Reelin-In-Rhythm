@@ -9,6 +9,7 @@ public class FishOPediaInventoryUI : MonoBehaviour, IInventoryUI
     [SerializeField] Inventory LeftPageInventory;
     [SerializeField] Inventory RightPageInventory;
     [SerializeField] Inventory thisInventory;
+    [SerializeField] Inventory FishOPediaInventory;
     [SerializeField] private GameObject slotPrefab;
     [SerializeField] private Transform slotGrid;
     [SerializeField] private GameObject toolTipPrefab;
@@ -16,6 +17,26 @@ public class FishOPediaInventoryUI : MonoBehaviour, IInventoryUI
     [SerializeField] private GameObject inventoryPanel;
 
     private GameObject toolTip;
+
+    private FishItem.Rarity currentRarity;
+
+    public void SetRarityAndRefresh(FishItem.Rarity rarity)
+    {
+        currentRarity = rarity;
+        Refresh();
+    }
+
+    public void UpdateInventory()
+    {
+        thisInventory.ClearInventory();
+        List<Item> pageItems = FishOPedia.Instance.GetAllObtainableFishOfRarity(currentRarity);
+
+        foreach (var item in pageItems)
+        {
+            thisInventory.AddItem(item);
+        }
+    }
+
     public void HandleSlotClicked(InventorySlot slot, Inventory owner)
     {
         //do nothing for now
@@ -97,7 +118,7 @@ public class FishOPediaInventoryUI : MonoBehaviour, IInventoryUI
         {
             GameObject slotGO = Instantiate(slotPrefab, slotGrid);
             InventorySlotUI slotUI = slotGO.GetComponent<InventorySlotUI>();
-            slotUI.Bind(slot, thisInventory);
+            slotUI.Bind(slot, thisInventory, true);
             slotUI.OnSlotClicked += HandleSlotClicked;
             slotUI.OnSlotHoverEnter += HandleSlotHoverEnter;
             slotUI.OnSlotHoverExit += HandleSlotHoverExit;
@@ -108,19 +129,6 @@ public class FishOPediaInventoryUI : MonoBehaviour, IInventoryUI
     {
         inventoryPanel.SetActive(!inventoryPanel.activeSelf);
     }
-
-    public void UpdateInventory()
-    {
-        thisInventory.ClearInventory();
-        List<Item> allItems = FishOPedia.Instance.GetAllObtainableFish();
-
-        foreach (var item in allItems)
-        {
-            if (item is FishItem fish)
-            {
-                thisInventory.AddItem(fish);
-            }
-        }
-    }
-
 }
+
+   

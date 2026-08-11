@@ -25,6 +25,25 @@ public class NoteHitManager : MonoBehaviour
 
     private KeyControl alternativeKey;
 
+    [SerializeField] private GameObject hitFeedbackPrefab;
+    [SerializeField] private RectTransform feedbackAnchor;
+    [SerializeField] private RectTransform canvasTransform;
+    [SerializeField] private Color HitColor = Color.white;
+    [SerializeField] private Color MissColor = Color.white;
+    [SerializeField] private Color LateColor = Color.white;
+    [SerializeField] private Color EarlyColor = Color.white;
+
+
+    private void SpawnFeedback(string message, Color color)
+    {
+        GameObject popup = Instantiate(hitFeedbackPrefab, canvasTransform);
+        RectTransform popupRect = popup.GetComponent<RectTransform>();
+        popupRect.anchoredPosition = feedbackAnchor.anchoredPosition; // same space, since both share canvasTransform as parent
+
+        HitFeedbackPopup feedback = popup.GetComponent<HitFeedbackPopup>();
+        feedback.Show(message, color);
+    }
+
 
     private void Awake()
     {
@@ -128,6 +147,7 @@ public class NoteHitManager : MonoBehaviour
         if (Keyboard.current.spaceKey.wasPressedThisFrame)
         {
             Debug.Log("ACTED ON SKIP!");
+            SpawnFeedback("MISS", MissColor);
             reelWheel.UpdateFishDistance(false);
             UnregisterNote(note);
             Destroy(note);
@@ -137,6 +157,7 @@ public class NoteHitManager : MonoBehaviour
         if(IsTooLate(note))
         {
             Debug.Log("SKIP SUCCESS!");
+            SpawnFeedback("HIT", HitColor);
             reelWheel.UpdateFishDistance(true);
             UnregisterNote(note);
             Destroy(note);
@@ -151,6 +172,7 @@ public class NoteHitManager : MonoBehaviour
             if(noteType == NoteType.Altkey)
             {
                 Debug.Log("Wrong Key!");
+                SpawnFeedback("MISS", MissColor);
                 reelWheel.UpdateFishDistance(false);
             }
             else
@@ -159,11 +181,13 @@ public class NoteHitManager : MonoBehaviour
                 if (result == NOTE_RESULTS[0])
                 {
                     Debug.Log(NOTE_RESULTS[0]);
+                    SpawnFeedback("HIT", HitColor);
                     reelWheel.UpdateFishDistance(true);
                 }
                 else
                 {
                     Debug.Log("MISS!");
+                    SpawnFeedback("MISS", MissColor);
                     reelWheel.UpdateFishDistance(false);
                 }
             }
@@ -178,6 +202,7 @@ public class NoteHitManager : MonoBehaviour
             if (noteType == NoteType.Tap)
             {
                 Debug.Log("Wrong Key!");
+                SpawnFeedback("MISS", MissColor);
                 reelWheel.UpdateFishDistance(false);
             }
             else
@@ -186,11 +211,13 @@ public class NoteHitManager : MonoBehaviour
                 if (result == NOTE_RESULTS[0])
                 {
                     Debug.Log(NOTE_RESULTS[0]);
+                    SpawnFeedback("HIT", HitColor);
                     reelWheel.UpdateFishDistance(true);
                 }
                 else
                 {
                     Debug.Log("MISS!");
+                    SpawnFeedback("MISS", MissColor);
                     reelWheel.UpdateFishDistance(false);
                 }
             }
@@ -203,6 +230,7 @@ public class NoteHitManager : MonoBehaviour
         if (IsTooLate(note))
         {
             Debug.Log("TOO LATE!");
+            SpawnFeedback("LATE", LateColor);
             reelWheel.UpdateFishDistance(false);
             UnregisterNote(note);
             Destroy(note);
@@ -225,6 +253,7 @@ public class NoteHitManager : MonoBehaviour
             else if (IsTooLate(note))
             {
                 Debug.Log("MISSED HOLD (never started)");
+                SpawnFeedback("MISS", MissColor);
                 reelWheel.UpdateFishDistance(false);
                 UnregisterNote(note);
                 Destroy(note);
@@ -235,12 +264,14 @@ public class NoteHitManager : MonoBehaviour
             if (!spacePressed)
             {
                 Debug.Log("MISSED HOLD (released early)");
+                SpawnFeedback("EARLY", EarlyColor);
                 reelWheel.UpdateFishDistance(false);
                 EndHold(note);
             }
             else if (Time.time - holdStartTime >= noteComp.holdDuration)
             {
                 Debug.Log("HOLD SUCCESS");
+                SpawnFeedback("HIT", HitColor);
                 reelWheel.UpdateFishDistance(true);
                 EndHold(note);
             }
