@@ -8,7 +8,6 @@ public class TutorialPopup : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI messageText;
     [SerializeField] private Button dismissButton;
-
     private Action onDismissed;
 
     private void Update()

@@ -42,7 +42,7 @@ DEMO / BETA - needs to work end to end
     caught) and a distinct one on fail ("it got away!"), separate from the
     per-note HIT/MISS feedback already wired up.
 
-[ ] Tutorial system
+[x] Tutorial system
     Contextual popups/windows that trigger before the player's first
     encounter with a new mechanic - first note ever seen, first time each
     new note type (Hold, Altkey, Skip, etc.) appears, first time entering

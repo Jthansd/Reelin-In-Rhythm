@@ -1,15 +1,33 @@
 using System;
+using UnityEngine;
 
 public static class MenuStateEvents
 {
-    // true = a menu/UI is open (gameplay input should be restricted)
-    // false = no menu open (normal gameplay input restored)
+    private static int openRequests = 0;
+
+    public static bool IsOpen => openRequests > 0;
+
     public static event Action<bool> OnMenuStateChanged;
 
     public static void SetMenuOpen(bool isOpen)
     {
-        OnMenuStateChanged?.Invoke(isOpen);
-
-
+        if (isOpen)
+        {
+            if (openRequests == 0)
+            {
+                OnMenuStateChanged?.Invoke(true);
+            }
+            openRequests++;
+        }
+        else
+        {
+            if (openRequests <= 0) return;
+            openRequests--;
+            if (openRequests == 0)
+            {
+                OnMenuStateChanged?.Invoke(false);
+            }
+        }
+        Debug.Log($"MenuStateEvents: openRequests = {openRequests}");
     }
 }

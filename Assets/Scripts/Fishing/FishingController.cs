@@ -31,6 +31,10 @@ public class FishingController : MonoBehaviour
     [SerializeField] PlayerStats playerStats;
     [SerializeField] PlayerEquipment playerEquipment;
     [SerializeField] RarityConfig rarityConfig;
+    [Header("Catch/Fail Feedback")]
+    [SerializeField] private GameObject catchPopupPrefab;
+    [SerializeField] private GameObject failPopupPrefab;
+    [SerializeField] private RectTransform canvasTransform;
 
     public FishingState CurrentState { get; private set; } = FishingState.Idle;
 
@@ -177,6 +181,7 @@ public class FishingController : MonoBehaviour
         {
             CleanUpTackle();
             playerEquipment.RevertBaitBuff(currentBait);
+            SpawnFailPopup();
         }
 
         currentFish = null;
@@ -279,6 +284,8 @@ public class FishingController : MonoBehaviour
         playerInventory.AddItem(currentFish);
         playerEquipment.RevertBaitBuff(currentBait);
         OnFishCaught?.Invoke(currentFish.ItemID);
+        TutorialManager.Instance.ShowIfUnseen("First_Catch", "You caught your first fish! Check it out by pressing [E] to open your backpack.");
+        SpawnCatchPopup(currentFish);
     }
 
     public float GetProgress()
@@ -294,4 +301,30 @@ public class FishingController : MonoBehaviour
     {
         return FishingMath.CalculateMissPenalty(currentFish.BaseDifficulty, FishingMath.CalculateNotesNeededAtParity(passingPercent, musicController.GetNoteCount()), missPenaltySeverity);
     }
-}
+
+    private void SpawnCatchPopup(FishItem fish)
+    {
+        if (catchPopupPrefab == null || canvasTransform == null) return;
+
+        GameObject popup = Instantiate(catchPopupPrefab, canvasTransform);
+        CatchResultPopup popupScript = popup.GetComponent<CatchResultPopup>();
+        if (popupScript != null)
+        {
+            popupScript.Show(fish);
+        }
+    }
+
+    private void SpawnFailPopup()
+    {
+        if (failPopupPrefab == null || canvasTransform == null) return;
+
+        GameObject popup = Instantiate(failPopupPrefab, canvasTransform);
+        CatchResultPopup popupScript = popup.GetComponent<CatchResultPopup>();
+        if (popupScript != null)
+        {
+            popupScript.Show(null);
+        }
+            // FailResultPopup (or however you build it) can self-manage its own display/dismiss timing,
+            // same self-contained pattern as HitFeedbackPopup - no data needed, just instantiate and let it run.
+        }
+    }

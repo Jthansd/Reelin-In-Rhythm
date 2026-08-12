@@ -2,6 +2,7 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -25,6 +26,8 @@ public class Shop : MonoBehaviour
     private bool buyOrSell = true; // true for buy, false for sell
 
     public bool BuyOrSell => buyOrSell;
+
+    private bool isOpen = false;
 
     public void SellItems()
     {
@@ -110,17 +113,22 @@ public class Shop : MonoBehaviour
 
     public void OpenShop()
     {
-        SetSoloActive("default");
-        MenuStateEvents.SetMenuOpen(true);
+        if (!isOpen)
+        {
+            isOpen = true;
+            MenuStateEvents.SetMenuOpen(true);
+        }
 
+        SetSoloActive("default"); // always runs - this is what the "back to default" button needs
         Debug.Log("Shop opened.");
     }
 
 
-
-
     public void CloseShop()
     {
+        if (!isOpen) return; // already closed - ignore redundant close calls
+        isOpen = false;
+
         PreventStealing();
         SetAllInactive();
         MenuStateEvents.SetMenuOpen(false);
@@ -130,6 +138,7 @@ public class Shop : MonoBehaviour
 
     public void OpenSellMenu()
     {
+        TutorialManager.Instance.ShowIfUnseen("Sell", "Here you can sell the fish you catch during your time here. Try moving your fish to the cart, and sell!");
         PreventStealing();
         SetInventories(playerInventory, cartInventory);
         SetSoloActive("sell");
@@ -140,6 +149,15 @@ public class Shop : MonoBehaviour
 
     public void OpenBuyMenu()
     {
+        if (!TutorialManager.Instance.HasSeen("Buy")) 
+        {
+            string equipmentTypeNames = "";
+            foreach(var equipmentType in EquipmentItem.GetAllEquipmentTypes()) 
+            {
+                equipmentTypeNames = equipmentTypeNames + " " + equipmentType;
+            }
+            TutorialManager.Instance.ShowIfUnseen("Buy", "Here you can buy upgrades to your equipment:" + equipmentTypeNames);
+        }
         PreventStealing();
         SetInventories(cartInventory, buyInventory);
         SetSoloActive("buy");

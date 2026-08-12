@@ -6090,6 +6090,9 @@ MonoBehaviour:
   playerStats: {fileID: 1047523025}
   playerEquipment: {fileID: 1047523026}
   rarityConfig: {fileID: 11400000, guid: c7b369b92922e844bbc6fc114a2afd23, type: 2}
+  catchPopupPrefab: {fileID: 3641554079079898469, guid: 148db1a422e61d646b9b2f2733dbe6b1, type: 3}
+  failPopupPrefab: {fileID: 3641554079079898469, guid: 576718ab3fc32c8479eba4ce4fdb0d6b, type: 3}
+  canvasTransform: {fileID: 2037963413}
 --- !u!4 &1940340344
 Transform:
   m_ObjectHideFlags: 0

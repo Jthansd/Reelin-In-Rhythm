@@ -1,3 +1,8 @@
+using NUnit.Framework;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEditor;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Equipment", menuName = "Scriptable Objects/Equipment")]
@@ -21,4 +26,9 @@ public class EquipmentItem : Item
     public float CatchStrengthMultiplier => catchStrengthMultiplier;
     public int LuckBonus => luckBonus;
     public float RarityMultiplier => rarityMultiplier;
+
+    public static List<EquipmentType> GetAllEquipmentTypes()
+    {
+        return Enum.GetValues(typeof(EquipmentType)).Cast<EquipmentType>().ToList();
+    }
 }
