@@ -43,7 +43,7 @@ public class CameraOrbit : MonoBehaviour
     void Start()
     {
         Debug.Assert(player, "CameraOrbit requires a player Transform.");
-        SetLookEnabled(true);
+        SetLookEnabled(!GamePauseManager.Instance.IsPaused);
     }
 
     void LateUpdate()

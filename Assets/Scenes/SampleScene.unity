@@ -119,6 +119,53 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &22523814
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 22523816}
+  - component: {fileID: 22523815}
+  m_Layer: 0
+  m_Name: TutorialManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &22523815
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 22523814}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 43b117b7a240afb4da017decb0451888, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TutorialManager
+  tutorialPopupPrefab: {fileID: 5821555038106840519, guid: a46b3240b6c808043b4a91f98f2d6efb, type: 3}
+  tutorialPopupPrefabNoButton: {fileID: 5821555038106840519, guid: 9c9c4d93065417347b4da6d136ca0ca0, type: 3}
+  canvasTransform: {fileID: 2037963413}
+--- !u!4 &22523816
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 22523814}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 756.71277, y: 524.53845, z: 4.6597}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &30346671
 GameObject:
   m_ObjectHideFlags: 0
@@ -505,16 +552,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1b4540e2b724af4bb239dd50902b819, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FishOPediaInventoryUI
-  fishOPedia: {fileID: 1661768076}
-  LeftPageInventory: {fileID: 765308612}
-  RightPageInventory: {fileID: 97887193}
-  thisInventory: {fileID: 97887193}
-  FishOPediaInventory: {fileID: 1661768079}
-  slotPrefab: {fileID: 5416422909298721797, guid: 18db9c215cc08f740becaed3960b0e69, type: 3}
   slotGrid: {fileID: 1378094694}
+  slotPrefab: {fileID: 5416422909298721797, guid: 18db9c215cc08f740becaed3960b0e69, type: 3}
+  inventoryPanel: {fileID: 455794028}
+  thisInventory: {fileID: 97887193}
   toolTipPrefab: {fileID: 5821555038106840519, guid: 1c64848273fca2149be9e9e041176efe, type: 3}
   canvasTransform: {fileID: 2037963413}
-  inventoryPanel: {fileID: 455794028}
 --- !u!114 &97887192
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2298,13 +2341,13 @@ MonoBehaviour:
   slotPrefab: {fileID: 5416422909298721797, guid: 18db9c215cc08f740becaed3960b0e69, type: 3}
   inventoryPanel: {fileID: 1667926632}
   thisInventory: {fileID: 1047523020}
+  toolTipPrefab: {fileID: 5821555038106840519, guid: 1c64848273fca2149be9e9e041176efe, type: 3}
+  canvasTransform: {fileID: 2037963413}
   playerInventory: {fileID: 1047523020}
   cartInventory: {fileID: 1200468409}
   buyInventory: {fileID: 1303353927}
   sellInventory: {fileID: 955293725}
   shop: {fileID: 705149433}
-  toolTipPrefab: {fileID: 5821555038106840519, guid: 1c64848273fca2149be9e9e041176efe, type: 3}
-  canvasTransform: {fileID: 2037963413}
 --- !u!1 &650475533
 GameObject:
   m_ObjectHideFlags: 0
@@ -2717,16 +2760,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b1b4540e2b724af4bb239dd50902b819, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::FishOPediaInventoryUI
-  fishOPedia: {fileID: 1661768076}
-  LeftPageInventory: {fileID: 765308612}
-  RightPageInventory: {fileID: 97887193}
-  thisInventory: {fileID: 765308612}
-  FishOPediaInventory: {fileID: 1661768079}
-  slotPrefab: {fileID: 5416422909298721797, guid: 18db9c215cc08f740becaed3960b0e69, type: 3}
   slotGrid: {fileID: 305442070}
+  slotPrefab: {fileID: 5416422909298721797, guid: 18db9c215cc08f740becaed3960b0e69, type: 3}
+  inventoryPanel: {fileID: 1605945907}
+  thisInventory: {fileID: 765308612}
   toolTipPrefab: {fileID: 5821555038106840519, guid: 1c64848273fca2149be9e9e041176efe, type: 3}
   canvasTransform: {fileID: 2037963413}
-  inventoryPanel: {fileID: 1605945907}
 --- !u!114 &765308614
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3256,7 +3295,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: -84}
+  m_AnchoredPosition: {x: 0, y: -115}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &938105732
@@ -4347,7 +4386,7 @@ MonoBehaviour:
   slotPrefab: {fileID: 5416422909298721797, guid: 18db9c215cc08f740becaed3960b0e69, type: 3}
   inventoryPanel: {fileID: 191263174}
   thisInventory: {fileID: 1047523020}
-  slotPopupPrefab: {fileID: 5821555038106840519, guid: 1c64848273fca2149be9e9e041176efe, type: 3}
+  toolTipPrefab: {fileID: 5821555038106840519, guid: 1c64848273fca2149be9e9e041176efe, type: 3}
   canvasTransform: {fileID: 2037963413}
 --- !u!1 &1281586418
 GameObject:
@@ -4769,7 +4808,6 @@ MonoBehaviour:
   notePrefab: {fileID: 863342728055127057, guid: ca7e4ab0344461a4da4e683bb1b71d11, type: 3}
   orbitSpeed: 180
   hitWindow: 15
-  noteDestroyer: {fileID: 0}
   bpm: 130
   beatsPerMeasure: 4
   rotationOffset: 0
@@ -5866,13 +5904,13 @@ MonoBehaviour:
   slotPrefab: {fileID: 5416422909298721797, guid: 18db9c215cc08f740becaed3960b0e69, type: 3}
   inventoryPanel: {fileID: 1150317849}
   thisInventory: {fileID: 1303353927}
+  toolTipPrefab: {fileID: 5821555038106840519, guid: 1c64848273fca2149be9e9e041176efe, type: 3}
+  canvasTransform: {fileID: 2037963413}
   playerInventory: {fileID: 1047523020}
   cartInventory: {fileID: 1200468409}
   buyInventory: {fileID: 1303353927}
   sellInventory: {fileID: 955293725}
   shop: {fileID: 705149433}
-  toolTipPrefab: {fileID: 5821555038106840519, guid: 1c64848273fca2149be9e9e041176efe, type: 3}
-  canvasTransform: {fileID: 2037963413}
 --- !u!1 &1935645023
 GameObject:
   m_ObjectHideFlags: 0
@@ -6085,6 +6123,50 @@ Transform:
   m_CorrespondingSourceObject: {fileID: -3321919801592875672, guid: dd55d012309bbc84b9e656b03f3c1742, type: 3}
   m_PrefabInstance: {fileID: 1047523006}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &2016817568
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2016817570}
+  - component: {fileID: 2016817569}
+  m_Layer: 0
+  m_Name: GamePauseManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2016817569
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2016817568}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 949fcd0820e90274193553448fc573cc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GamePauseManager
+--- !u!4 &2016817570
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2016817568}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 756.71277, y: 524.53845, z: 4.6597}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2037963409
 GameObject:
   m_ObjectHideFlags: 0
@@ -6478,3 +6560,5 @@ SceneRoots:
   - {fileID: 956688163}
   - {fileID: 1014633504}
   - {fileID: 1586980133}
+  - {fileID: 2016817570}
+  - {fileID: 22523816}

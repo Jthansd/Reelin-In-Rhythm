@@ -7,7 +7,6 @@ public class NoteHitManager : MonoBehaviour
 {
     private List<NoteTiming> spawnTimes; 
     private int nextNoteIndex = 0;
-    private float spawnLeadTime;
     private float hitWindow = 15f;
     private List<GameObject> activeNotes = new List<GameObject>();
 
@@ -52,9 +51,11 @@ public class NoteHitManager : MonoBehaviour
 
     }
 
-    void Start()
+    
+
+    private float GetSpawnLeadTime()
     {
-        spawnLeadTime = 2f * (60f / reelWheel.bpm);
+        return 2f * (60f / reelWheel.bpm);
     }
 
     void Update()
@@ -75,7 +76,7 @@ public class NoteHitManager : MonoBehaviour
         float currentTime = MusicController.Instance.GetCurrentMusicTime();
         NoteTiming nextTiming = easyTimings[nextNoteIndex];
 
-        if (currentTime >= nextTiming.hitTime - spawnLeadTime)
+        if (currentTime >= nextTiming.hitTime - GetSpawnLeadTime())
         {
             reelWheel.SpawnSingleNote(nextTiming);
             nextNoteIndex++;
@@ -133,6 +134,14 @@ public class NoteHitManager : MonoBehaviour
                 CheckSkipInput(front);
                 break;
         }
+
+
+    }
+
+
+    public ReelWheelNote GetFrontNote()
+    {
+        return activeNotes[0].GetComponent<ReelWheelNote>();
     }
 
     

@@ -39,4 +39,16 @@ public class PlayerController : MonoBehaviour
         fishOPediaManager.ToggleFishOPedia();
     }
 
+    private void OnTogglePause()
+    {
+        if (GamePauseManager.Instance.IsPaused)
+        {
+            GamePauseManager.Instance.ReleasePause();
+        }
+        else
+        {
+            GamePauseManager.Instance.RequestPause();
+        }
+    }
+
 }

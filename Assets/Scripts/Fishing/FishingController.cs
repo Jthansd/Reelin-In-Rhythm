@@ -23,6 +23,7 @@ public class FishingController : MonoBehaviour
     private EquipmentItem currentBait;
 
     private float passingPercent = 0.7f; // 70% passing notes required to catch the fish
+    private float missPenaltySeverity = 0.55f;
 
     [SerializeField] MusicController musicController;
     [SerializeField] Inventory playerInventory;
@@ -127,6 +128,7 @@ public class FishingController : MonoBehaviour
 
             if (roll == 1)
             {
+                TutorialManager.Instance.ShowIfUnseen("Hooked", "Looks like you hooked your first fish! Prepare to reel it in.");
                 HandleHookedAction();
                 yield break;
             }
@@ -153,6 +155,8 @@ public class FishingController : MonoBehaviour
             currentFish = fish;
             DetermineDifficulty(currentFish);
         }
+
+        
 
         fisherman.StartReeling();
         CurrentState = FishingState.Reeling;
@@ -284,5 +288,10 @@ public class FishingController : MonoBehaviour
             FishingMath.CalculateFishDifficultyProduct(currentFish.BaseDifficulty, currentFish.GetRarityMultiplier(), currentFish.CustomDifficultyMultiplier),
             FishingMath.CalculateNotesNeededAtParity(passingPercent, musicController.GetNoteCount())
         );
+    }
+
+    public float GetMissPenalty()
+    {
+        return FishingMath.CalculateMissPenalty(currentFish.BaseDifficulty, FishingMath.CalculateNotesNeededAtParity(passingPercent, musicController.GetNoteCount()), missPenaltySeverity);
     }
 }

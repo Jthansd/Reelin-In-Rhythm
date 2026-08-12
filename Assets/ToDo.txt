@@ -1,0 +1,110 @@
+========================================
+REELIN' IN RHYTHM - ROADMAP / TODO
+========================================
+Last updated: working session notes - review and revise as priorities shift.
+
+
+----------------------------------------
+DEMO / BETA - needs to work end to end
+----------------------------------------
+
+[X] Fix miss penalty scaling
+    Currently scales with player CatchStrength, which feels wrong - a miss
+    penalty tied to the same stat that makes hits count for MORE doesn't
+    make sense as a punishment. Needs its own scaling logic, likely tied to
+    fish difficulty instead (harder fish punish misses harder), independent
+    of player power.
+
+[ ] Playtest and tune tier resolution thresholds
+    relativeDifficulty >= 1.5 (Hard) / >= 0.75 (Medium) were placeholder
+    guesses, never actually playtested. Needs real tuning once enough
+    content exists to test against.
+
+[ ] Playtest full difficulty curve end to end
+    Confirm progress-per-hit, fish difficulty growth (1.25x/2.0x factors),
+    and equipment multiplier scaling all feel coherent together across a
+    full playthrough, not just in isolation.
+
+[ ] Full loop playtest pass
+    Cast -> hook -> reel -> sell/buy -> repeat, multiple times in a row,
+    checking for state desyncs, leftover UI (tooltips, popups), and any
+    lingering bugs from the FishingState refactor.
+
+[ ] Simple version of quests/goals
+    A lightweight version of the Final Product goals/achievements feature
+    (see below) - just enough to give the demo a sense of purpose beyond
+    the pure sandbox loop. Full scope comes later.
+
+[ ] Catch / fail feedback for the player
+    Right now a successful or failed catch is only visible via Debug.Log
+    and the fish quietly appearing in the inventory. Player needs clear,
+    immediate feedback - a popup/banner on catch (possibly showing the fish
+    caught) and a distinct one on fail ("it got away!"), separate from the
+    per-note HIT/MISS feedback already wired up.
+
+[ ] Tutorial system
+    Contextual popups/windows that trigger before the player's first
+    encounter with a new mechanic - first note ever seen, first time each
+    new note type (Hold, Altkey, Skip, etc.) appears, first time entering
+    the shop. Consider a dedicated "Tutorial Scene" - a small stripped-down
+    version of the current lake setup - that walks a new player through
+    casting, hooking, and playing the reel wheel minigame before dropping
+    them into the real game.
+
+
+----------------------------------------
+NICE TO HAVE - quality of life / polish
+----------------------------------------
+
+[ ] Save/load persistence
+    Inventory has JSON save/load already - confirm PlayerStats, equipped
+    gear, currency, and FishOPedia discovery progress are also persisted.
+    Any system added after this point needs to be added to save data too.
+    Not critical for an early playtest/demo, but needed before this goes
+    beyond that.
+
+[ ] Additional note types beyond Tap/Hold/Altkey/Skip
+    Swipe (mouse drag direction), Circle (mouse gesture draw) were
+    discussed as options for further difficulty/variety.
+
+[ ] Per-fish tier override / minimum tier floor
+    Let a specific fish always play at least Medium difficulty, regardless
+    of player power - for fish meant to always feel like a fight.
+
+[ ] Hit window tightening by difficulty
+    Currently a flat 15 degrees regardless of fish difficulty. Could shrink
+    for harder fish as a secondary difficulty lever alongside progress-per-hit.
+
+[ ] Rarity-colored silhouette icons in the encyclopedia
+    Currently undiscovered fish are flat black. Could use the alpha-mask
+    shader approach discussed to tint silhouettes by rarity color instead.
+
+
+----------------------------------------
+FINAL PRODUCT - full scope features
+----------------------------------------
+
+[ ] Multiple fishing locations
+    Different rarity tables, fish pools, and possibly different reel-wheel
+    difficulty/BPM per location. RarityConfig and fish database were
+    designed to support this already.
+
+[ ] Quests / contracts / achievements
+    Light structure on top of the sandbox loop - "catch 3 rare fish," a
+    collection completion goal, encyclopedia-completion milestones, rare
+    catch achievements, or a narrative hook. Should come after the core
+    loop is confirmed to feel good on its own. A simple version ships in
+    the demo/beta (see above); this is the full scope version.
+
+[ ] Equipment special effects, not just stat multipliers
+    E.g. "prevent 3 misses per reel sequence," "higher sell value but any
+    miss is instant fail." Gives players playstyle decisions instead of
+    strictly-better-or-worse gear choices.
+
+[ ] Expanded song library
+    More songs authored per difficulty tier, so song selection doesn't feel
+    repetitive. Currently very few songs exist.
+
+[ ] Full art and UI polish pass
+    Was flagged early as "polish for later" - menus, icons, and overall
+    visual identity beyond current minimalist placeholders.

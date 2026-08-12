@@ -18,6 +18,8 @@ public class Inventory : MonoBehaviour
     }
 
 
+
+
     private void populateInventory()
     {
         for (int i = 0; i < maxInventorySize; i++)

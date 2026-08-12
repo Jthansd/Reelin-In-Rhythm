@@ -17,8 +17,6 @@ public class ReelWheel : MonoBehaviour
 
     private bool isRunning = false; // internal only - is the wheel actively spinning right now
 
-    public GameObject noteDestroyer;
-
     [Header("Music Sync")]
     public float bpm = 130f;
     public float beatsPerMeasure = 4f;
@@ -37,6 +35,11 @@ public class ReelWheel : MonoBehaviour
     [SerializeField] private FishingController fishingController;
 
     private float progressAmount = 0.1f;
+    private float penaltyAmount = 0.1f;
+
+    private float currentPauseTime;
+    private static float dontPause = 999f;
+
 
     // Fired exactly once per reel attempt, when the outcome is decided. bool = fish caught.
     public event Action<bool> OnReelComplete;
@@ -46,15 +49,32 @@ public class ReelWheel : MonoBehaviour
     {
         reelWheelUI.SetActive(false);
         Debug.Log("Reel Wheel Test Started");
+        currentPauseTime = dontPause;
     }
 
     void Update()
     {
-        if (isRunning)
+        if (!isRunning) return;
+        if (GamePauseManager.Instance.IsPaused) return;
+
+        RunOrbit();
+        noteHitManager.SpawnNotesOnTime();
+        noteHitManager.CheckInput();
+        CheckTutorialPause();
+    }
+
+    private void CheckTutorialPause()
+    {
+        if (currentPauseTime == dontPause)
         {
-            RunOrbit();
-            noteHitManager.SpawnNotesOnTime();
-            noteHitManager.CheckInput();
+            return;
+        }
+        else if (currentPauseTime - MusicController.Instance.GetCurrentMusicTime() <= .05f)
+        {
+            Debug.Log("Its time to pause");
+            string noteTypeName = noteHitManager.GetFrontNote().noteType.ToString();
+            TutorialManager.Instance.ShowIfUnseenNoteType(noteTypeName);
+            currentPauseTime = dontPause; // reset so future note-type tutorials can schedule again
         }
     }
 
@@ -101,6 +121,7 @@ public class ReelWheel : MonoBehaviour
 
         if (timing.noteType == NoteType.Hold)
         {
+
             float holdDuration = Mathf.Max(0f, timing.releaseTime - timing.hitTime);
             noteComp.holdDuration = holdDuration;
 
@@ -128,8 +149,20 @@ public class ReelWheel : MonoBehaviour
         }
 
         noteHitManager.RegisterNote(note);
+      
+
+        if(!TutorialManager.Instance.HasSeen(noteComp.noteType.ToString() + TutorialManager.Instance.NoteTypeTail) && currentPauseTime == dontPause)
+        {
+            Debug.Log(noteComp.noteType.ToString() + TutorialManager.Instance.NoteTypeTail + " has not been seen: popup tutorial");
+            //Make this note a freebie and prevent the player from hitting the note intentionally before the popup appears
+            float pauseTime = FishingMath.CalculateTutorialPause(timing.hitTime, bpm, 2);
+            Debug.Log("Pause time should be " +  pauseTime);
+            currentPauseTime = pauseTime;
+        }
     }
 
+       
+ 
     private Vector2 SpawnHoldTail(Vector2 headLocalPos, float headTravelTime, float holdDuration, out GameObject tailObject)
     {
         float offsetDegrees = GetDegreesPerSecond() * holdDuration;
@@ -188,6 +221,8 @@ public class ReelWheel : MonoBehaviour
 
     public void StartReelWheel()
     {
+        currentPauseTime = dontPause;
+        MusicController.Instance.OnSongFinished += HandleSongFinished;
         MusicController.Instance.OnStartReelWheel();
         SetBPM(MusicController.Instance.GetCurrentBPM());
         CameraOrbit.Instance.SetLookEnabled(false);
@@ -199,27 +234,22 @@ public class ReelWheel : MonoBehaviour
         isRunning = true;
         MusicController.Instance.PlayMusic();
         progressAmount = fishingController.GetProgress();
+        penaltyAmount = fishingController.GetMissPenalty();
         Debug.Log("Progress amount set to: " + progressAmount);
+        Debug.Log("Penalty amount set to: " + penaltyAmount);
+        TutorialManager.Instance.ShowIfUnseen("First_ReelWheel", "This is the Reel Wheel! Fish are attracted to music, allowing you to reel them in closer with every note you hit. But be careful! Any missed notes and the fish will pull away from you.");
     }
 
     private void StopReelWheel()
     {
+        MusicController.Instance.OnSongFinished -= HandleSongFinished;
         CameraOrbit.Instance.SetLookEnabled(true);
         isRunning = false;
         reelWheelUI.SetActive(false);
         MusicController.Instance.StopMusic();
     }
 
-    private void OnEnable()
-    {
-        MusicController.Instance.OnSongFinished += HandleSongFinished;
-    }
-
-    private void OnDisable()
-    {
-        MusicController.Instance.OnSongFinished -= HandleSongFinished;
-    }
-
+   
     private void HandleSongFinished()
     {
         // Song ran out before the meter resolved either way - treat as a failure.
@@ -229,7 +259,16 @@ public class ReelWheel : MonoBehaviour
 
     public void UpdateFishDistance(bool hit)
     {
-        int result = fishMeter.Advance(hit, progressAmount);
+        int result;
+        if (hit)
+        {
+            result = fishMeter.Advance(hit, progressAmount);
+        }
+        else
+        {
+            result = fishMeter.Advance(hit,  penaltyAmount);
+        }
+
         if (result == 0)
         {
             return; // no resolution yet, still reeling

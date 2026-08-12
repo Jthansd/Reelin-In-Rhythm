@@ -16,6 +16,8 @@ public class MusicController : MonoBehaviour
     public static MusicController Instance { get; private set; }
     public event Action OnSongFinished;
 
+    private bool wasPlayingLastFrame = false;
+
     private void Awake()
     {
         Instance = this;
@@ -24,14 +26,18 @@ public class MusicController : MonoBehaviour
         audioSource.playOnAwake = false;
     }
 
+
+
     private void Update()
     {
-        if (audioSource.clip == null) return;
+        if (GamePauseManager.Instance.IsPaused) return; // don't misread a tutorial pause as the song finishing
 
-        if (audioSource.isPlaying == false && audioSource.time > 0f)
+        bool isPlayingNow = audioSource.isPlaying;
+        if (wasPlayingLastFrame && !isPlayingNow)
         {
             OnSongFinished?.Invoke();
         }
+        wasPlayingLastFrame = isPlayingNow;
     }
 
     public void PlayMusic()
