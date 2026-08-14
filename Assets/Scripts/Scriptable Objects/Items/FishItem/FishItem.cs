@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "FishItem", menuName = "Scriptable Objects/FishItem")]
@@ -11,6 +14,7 @@ public class FishItem : Item
         Legendary, //75
         Impossible //101
     }
+    
 
 
     [SerializeField] private int sellValue;
@@ -38,6 +42,14 @@ public class FishItem : Item
             default:
                 return Color.grey;
         }
+    }
+
+    public static List<Rarity> GetPlayerFacingRarities()
+    {
+        return Enum.GetValues(typeof(Rarity))
+            .Cast<Rarity>()
+            .Where(r => r != Rarity.Impossible)
+            .ToList();
     }
 
     public int GetRarityMultiplier()

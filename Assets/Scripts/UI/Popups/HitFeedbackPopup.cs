@@ -1,7 +1,7 @@
 using UnityEngine;
 using TMPro;
 
-public class HitFeedbackPopup : MonoBehaviour
+public class HitFeedbackPopup : MonoBehaviour, IPopup
 {
     [SerializeField] private TextMeshProUGUI text;
     [SerializeField] private float lifetime = 0.6f;
@@ -15,6 +15,11 @@ public class HitFeedbackPopup : MonoBehaviour
     void Awake()
     {
         rect = GetComponent<RectTransform>();
+    }
+
+    public void ForceDismiss()
+    {
+        Destroy(gameObject);
     }
 
     public void Show(string message, Color color)

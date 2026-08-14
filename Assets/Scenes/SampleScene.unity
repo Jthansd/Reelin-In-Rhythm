@@ -2278,6 +2278,41 @@ Transform:
   - {fileID: 2121955004}
   m_Father: {fileID: 77725884}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &573750225
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 573750226}
+  m_Layer: 5
+  m_Name: ObjectivePopupLocation
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &573750226
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 573750225}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2037963413}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 247, y: 113}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!4 &582144222 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8613800239243423786, guid: 845e2b61ea410b649ae1ec8e868de90e, type: 3}
@@ -5809,6 +5844,61 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1724156666}
   m_CullTransparentMesh: 1
+--- !u!1 &1769690604
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1769690606}
+  - component: {fileID: 1769690605}
+  m_Layer: 0
+  m_Name: ObjectiveManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1769690605
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1769690604}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fae2a7797cf9b6c45860223c1a316a5a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::QuestManager
+  availableObjectives:
+  - {fileID: 11400000, guid: f4127db45bab4044d9cf7adb90aad623, type: 2}
+  - {fileID: 11400000, guid: 40855a87f01cfdf4baa632edf9001a2c, type: 2}
+  - {fileID: 11400000, guid: e3c023a69a4845d4c8a2034cae7be766, type: 2}
+  - {fileID: 11400000, guid: f59878a26ff6c284eb7832fb176f2991, type: 2}
+  - {fileID: 11400000, guid: ec6b5476d57eab84e955ef4a0ca97a01, type: 2}
+  - {fileID: 11400000, guid: c141745f1bec7ad4bb881f0a682c186d, type: 2}
+  fishingController: {fileID: 1940340343}
+  fishDatabase: {fileID: 11400000, guid: dc876b1c99b57dc42961640cd26f65ab, type: 2}
+  objectivePopupPrefab: {fileID: 3641554079079898469, guid: 814e22b56d06b2b48b69076448911814, type: 3}
+  canvasTransform: {fileID: 573750226}
+--- !u!4 &1769690606
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1769690604}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 14.3994, y: 1.917, z: 29.20946}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &1813283956 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6502182839619065283, guid: dd55d012309bbc84b9e656b03f3c1742, type: 3}
@@ -6271,6 +6361,7 @@ RectTransform:
   - {fileID: 283144199}
   - {fileID: 1063223783}
   - {fileID: 1661768077}
+  - {fileID: 573750226}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -6565,3 +6656,4 @@ SceneRoots:
   - {fileID: 1586980133}
   - {fileID: 2016817570}
   - {fileID: 22523816}
+  - {fileID: 1769690606}

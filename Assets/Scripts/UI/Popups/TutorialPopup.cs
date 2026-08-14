@@ -4,7 +4,7 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.InputSystem;
 
-public class TutorialPopup : MonoBehaviour
+public class TutorialPopup : MonoBehaviour, IPopup
 {
     [SerializeField] private TextMeshProUGUI messageText;
     [SerializeField] private Button dismissButton;
@@ -16,6 +16,11 @@ public class TutorialPopup : MonoBehaviour
         {
             Dismiss();
         }
+    }
+
+    public void ForceDismiss()
+    {
+        Dismiss(); // reuses existing private method - just needs to become accessible, or ForceDismiss() calls the same body
     }
 
     public void Show(string message, Action onDismissedCallback)

@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class CatchResultPopup : MonoBehaviour
+public class CatchResultPopup : MonoBehaviour, IPopup
 {
     [SerializeField] private Image fishIcon;
     [SerializeField] private TextMeshProUGUI nameText;
@@ -17,6 +17,12 @@ public class CatchResultPopup : MonoBehaviour
     void Awake()
     {
         rect = GetComponent<RectTransform>();
+    }
+
+    public void ForceDismiss()
+    {
+        StopAllCoroutines();
+        Destroy(gameObject);
     }
 
     public void Show(FishItem fish)

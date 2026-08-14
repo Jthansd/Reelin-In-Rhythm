@@ -35,14 +35,14 @@ DEMO / BETA - needs to work end to end
     (see below) - just enough to give the demo a sense of purpose beyond
     the pure sandbox loop. Full scope comes later.
 
-[ ] Catch / fail feedback for the player
+[X] Catch / fail feedback for the player
     Right now a successful or failed catch is only visible via Debug.Log
     and the fish quietly appearing in the inventory. Player needs clear,
     immediate feedback - a popup/banner on catch (possibly showing the fish
     caught) and a distinct one on fail ("it got away!"), separate from the
     per-note HIT/MISS feedback already wired up.
 
-[x] Tutorial system
+[X] Tutorial system
     Contextual popups/windows that trigger before the player's first
     encounter with a new mechanic - first note ever seen, first time each
     new note type (Hold, Altkey, Skip, etc.) appears, first time entering
