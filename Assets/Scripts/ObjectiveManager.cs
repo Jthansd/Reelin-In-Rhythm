@@ -7,11 +7,13 @@ public class ObjectiveManager : MonoBehaviour
 {
     public static ObjectiveManager Instance { get; private set; }
 
-    [SerializeField] private List<Objective> availableObjectives;
+    [SerializeField] private ObjectiveDatabase availableObjectives;
     [SerializeField] private FishingController fishingController;
     [SerializeField] private ItemDatabase fishDatabase;
     [SerializeField] private GameObject objectivePopupPrefab;
     [SerializeField] private RectTransform canvasTransform;
+    [SerializeField] private GameObject objectivesPanel;
+    [SerializeField] private ObjectivesUI objectivesUI;
 
     private class ObjectiveRuntimeProgress
     {
@@ -44,7 +46,7 @@ public class ObjectiveManager : MonoBehaviour
 
     private List<Objective> GetActiveObjectives()
     {
-        return availableObjectives.Where(o => !completedObjectives.Contains(o.objectiveId)).ToList();
+        return availableObjectives.Objectives.Where(o => !completedObjectives.Contains(o.objectiveId)).ToList();
     }
 
     private ObjectiveRuntimeProgress GetOrCreateProgress(string objectiveId)
@@ -126,4 +128,19 @@ public class ObjectiveManager : MonoBehaviour
         }
     }
     public bool IsCompleted(string objectiveId) => completedObjectives.Contains(objectiveId);
+
+
+
+    public void ToggleObjectives()
+    {
+        bool willBeActive = !objectivesPanel.activeSelf;
+        objectivesPanel.SetActive(willBeActive);
+
+        if (willBeActive)
+        {
+            objectivesUI.Refresh(); // make sure the list reflects current progress, not stale data from last time it was open
+        }
+
+        MenuStateEvents.SetMenuOpen(willBeActive);
+    }
 }

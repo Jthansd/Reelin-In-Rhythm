@@ -51,4 +51,10 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    private void OnToggleObjectives()
+    {
+        Debug.Log("Open the Objectives Menu");
+        ObjectiveManager.Instance.ToggleObjectives();
+    }
+
 }

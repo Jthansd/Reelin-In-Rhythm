@@ -10,7 +10,7 @@ public class TutorialManager : MonoBehaviour
     [SerializeField] private GameObject tutorialPopupPrefab;
     [SerializeField] private GameObject tutorialPopupPrefabNoButton;
     [SerializeField] private RectTransform canvasTransform;
-
+    [SerializeField] private bool playTutorial;
     private HashSet<string> seenTutorials = new();
     private Queue<string> pendingMessages = new();
     private bool popupActive = false;
@@ -38,6 +38,7 @@ public class TutorialManager : MonoBehaviour
 
     public void ShowIfUnseen(string tutorialId, string message)
     {
+        if (!playTutorial) { return; }
         if (seenTutorials.Contains(tutorialId)) return;
 
         seenTutorials.Add(tutorialId);
@@ -51,6 +52,7 @@ public class TutorialManager : MonoBehaviour
 
     private void ShowNext(GameObject popUpPrefab)
     {
+        if(!playTutorial) { return; }
         if (pendingMessages.Count == 0)
         {
             popupActive = false;
@@ -93,6 +95,7 @@ public class TutorialManager : MonoBehaviour
 
     public void ShowIfUnseenNoteType(string noteType)
     {
+        if (!playTutorial) { return; }
         if (seenTutorials.Contains(noteType + NoteTypeTail)) return;
         string message = "";
         if (noteType == NoteType.Altkey.ToString())

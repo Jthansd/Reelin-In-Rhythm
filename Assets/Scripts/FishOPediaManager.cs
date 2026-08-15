@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 
 public class FishOPediaManager : MonoBehaviour
@@ -70,6 +71,7 @@ public class FishOPediaManager : MonoBehaviour
     private void RemovePage(FishOPediaInventoryUI page)
     {
         page.gameObject.SetActive(false);
+
     }
 
 

@@ -50,6 +50,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "ToggleObjectives",
+                    "type": "Button",
+                    "id": "21549b14-fed5-438b-9f0a-8832bfd77ea0",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -144,11 +153,22 @@
                 {
                     "name": "",
                     "id": "1d12af7f-d826-42cc-b9fe-f484d5654c34",
-                    "path": "<Keyboard>/p",
+                    "path": "<Keyboard>/escape",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
                     "action": "TogglePause",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "84af7120-df61-44c7-bc7c-c0e48a29aade",
+                    "path": "<Keyboard>/f",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ToggleObjectives",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

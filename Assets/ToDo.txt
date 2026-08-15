@@ -30,7 +30,7 @@ DEMO / BETA - needs to work end to end
     checking for state desyncs, leftover UI (tooltips, popups), and any
     lingering bugs from the FishingState refactor.
 
-[ ] Simple version of quests/goals
+[x] Simple version of quests/goals
     A lightweight version of the Final Product goals/achievements feature
     (see below) - just enough to give the demo a sense of purpose beyond
     the pure sandbox loop. Full scope comes later.

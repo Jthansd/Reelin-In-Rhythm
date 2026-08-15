@@ -5,9 +5,11 @@ using UnityEngine;
 public class FishOPediaInventoryUI : InventoryDisplayBase
 {
     private FishItem.Rarity currentRarity;
+    [SerializeField] TextMeshProUGUI rarityText;
 
     public void SetRarityAndRefresh(FishItem.Rarity rarity)
     {
+        rarityText.text = rarity.ToString();
         currentRarity = rarity;
         Refresh();
     }
