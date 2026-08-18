@@ -51,9 +51,15 @@ public class ItemDatabase : ScriptableObject
         List<Item> result = new List<Item>();
         foreach (var item in allItems)
         {
-            if (item is FishItem fish && fish.rarity == rarity)
+            if (item is FishItem fish)
             {
-                result.Add(item);
+                foreach(var rarityIndex in fish.PossibleRarities)
+                {
+                    if(rarityIndex == rarity)
+                    {
+                        result.Add(item);
+                    }
+                }
             }
         }
         return result;

@@ -14,17 +14,31 @@ public class FishItem : Item
         Legendary, //75
         Impossible //101
     }
-    
+
+    public enum FishSize
+    {
+        Tiny,
+        Small,
+        Medium,
+        Large,
+        Giant
+    }
 
 
-    [SerializeField] private int sellValue;
-    [SerializeField] private Rarity rarityType;
-    private float baseDifficulty = 10;
+
+    [SerializeField] private int baseValue;
     [SerializeField] private float customDifficultyMultiplier = 1.0f;
-    public int SellValue => sellValue;
-    public Rarity rarity => rarityType;
+    [SerializeField] private float maxSize;
+    [SerializeField] private float minSize;
+    [SerializeField] private List<Rarity> possibleRarities;
+
+    private float baseDifficulty = 10;
+    public int BaseValue => baseValue;
     public float BaseDifficulty => baseDifficulty;
     public float CustomDifficultyMultiplier => customDifficultyMultiplier;
+    public List<Rarity> PossibleRarities => possibleRarities;
+    public float MaxSize => maxSize;
+    public float MinSize => minSize;
     public static Color RarityColor(Rarity rarity)
     {
         switch (rarity)
@@ -52,7 +66,7 @@ public class FishItem : Item
             .ToList();
     }
 
-    public int GetRarityMultiplier()
+    public int GetRarityMultiplier(FishItem.Rarity rarityType)
     {
         switch (rarityType)
         {

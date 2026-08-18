@@ -25,12 +25,12 @@ public class CatchResultPopup : MonoBehaviour, IPopup
         Destroy(gameObject);
     }
 
-    public void Show(FishItem fish)
+    public void Show(CaughtFish fish)
     {
         if (fish != null)
         {
-            fishIcon.sprite = fish.Icon;
-            nameText.text = fish.ItemName;
+            fishIcon.sprite = fish.fish.Icon;
+            nameText.text = fish.fish.ItemName;
             rarityText.text = fish.rarity.ToString();
             cardBackground.color = GetRarityColor(fish.rarity);
         }

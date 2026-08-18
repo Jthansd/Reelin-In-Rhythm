@@ -59,9 +59,10 @@ public class ObjectiveManager : MonoBehaviour
         return o;
     }
 
-    private void HandleFishCaught(string fishId)
+    private void HandleFishCaught(CaughtFish caughtFish)
     {
-        FishItem fish = fishDatabase.GetItemByID(fishId) as FishItem;
+        if(caughtFish == null) { return; }
+        FishItem fish = fishDatabase.GetItemByID(caughtFish.fish.ItemID) as FishItem;
         if (fish == null) return;
 
         foreach (var objective in GetActiveObjectives())
@@ -76,7 +77,7 @@ public class ObjectiveManager : MonoBehaviour
                     break;
 
                 case ObjectiveType.CatchRarityCount:
-                    if (fish.rarity == objective.requiredRarity)
+                    if (caughtFish.rarity == objective.requiredRarity)
                     {
                         o.simpleCount++;
                         CheckComplete(objective, o.simpleCount >= objective.targetCount);
@@ -84,7 +85,7 @@ public class ObjectiveManager : MonoBehaviour
                     break;
 
                 case ObjectiveType.CatchOneOfEachRarity:
-                    o.rarityHitSet.Add(fish.rarity);
+                    o.rarityHitSet.Add(caughtFish.rarity);
                     int totalRarities = FishItem.GetPlayerFacingRarities().Count;
                     CheckComplete(objective, o.rarityHitSet.Count >= totalRarities);
                     break;

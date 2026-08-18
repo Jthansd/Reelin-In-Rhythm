@@ -12,6 +12,7 @@ public class AnimatedController : MonoBehaviour
         animator = GetComponent<Animator>();
         moveController = GetComponent<MovementController>();
         fishingController = FindAnyObjectByType<FishingController>();
+
     }
 
     public void SetTrigger(string name)
@@ -21,8 +22,11 @@ public class AnimatedController : MonoBehaviour
 
     void Update()
     {
+
         moveSpeed = moveController.GetHorizontalSpeedPercent();
         animator.SetFloat("Speed", moveSpeed);
+
+        
     }
 
     public void SetBool(string name, bool value)

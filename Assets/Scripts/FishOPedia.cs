@@ -29,9 +29,9 @@ public class FishOPedia : MonoBehaviour
         fishingController.OnFishCaught -= HandleFishCaught;
     }
 
-    private void HandleFishCaught(string id)
+    private void HandleFishCaught(CaughtFish caughtFish)
     {
-        NewDiscovery(id);
+        NewDiscovery(caughtFish.fish.ItemID);
     }
 
 

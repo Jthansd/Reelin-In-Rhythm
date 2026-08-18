@@ -101,7 +101,7 @@ public abstract class InventoryDisplayBase : MonoBehaviour, IInventoryUI
 
         nameText.text = slot.item.ItemName;
         descText.text = slot.item.ItemDescription;
-        priceText.text = slot.item is FishItem discoveredFish ? discoveredFish.SellValue.ToString() : slot.item.Value.ToString();
+        priceText.text = slot.item is FishItem discoveredFish ? discoveredFish.BaseValue.ToString() : slot.item.Value.ToString();
     }
 
     public virtual void ToggleInventoryUI()

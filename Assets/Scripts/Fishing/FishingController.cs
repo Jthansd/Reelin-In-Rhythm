@@ -19,8 +19,10 @@ public class FishingController : MonoBehaviour
 
     private float checkInterval = 2f;
 
-    private FishItem currentFish;
+    private FishItem currentFishItem;
     private EquipmentItem currentBait;
+
+    private CaughtFish currentFish;
 
     private float passingPercent = 0.7f; // 70% passing notes required to catch the fish
     private float missPenaltySeverity = 0.55f;
@@ -40,7 +42,7 @@ public class FishingController : MonoBehaviour
 
     // Fired when a fishing encounter ends, either way. bool = was the fish caught.
     public event Action<bool> OnFishingEncounterEnded;
-    public event Action<string> OnFishCaught;
+    public event Action<CaughtFish> OnFishCaught;
 
     private void Update()
     {
@@ -154,10 +156,27 @@ public class FishingController : MonoBehaviour
             Debug.Log("No bait equipped.");
         }
 
-        if (fishingReward.GetRandomFishWithRarity(DetermineRarity()) is FishItem fish)
+        FishItem.Rarity rarity = DetermineRarity();
+
+        if (fishingReward.GetRandomFishWithRarity(rarity) is FishItem fish)
         {
-            currentFish = fish;
-            DetermineDifficulty(currentFish);
+            currentFishItem = fish;
+            //determine FishSize and size, then calculate difficulty
+            FishItem.FishSize fishSize;
+            float fishSizeValue;
+            float minSize = fish.MinSize;
+            float maxSize = fish.MaxSize;
+            fishSizeValue = FishingMath.CalculateFishSize(minSize, maxSize);
+            fishSize = FishingMath.GetFishSizeCategory(fishSizeValue, maxSize);
+            CaughtFish hookedFish = new CaughtFish();
+            hookedFish.fish = fish;
+            hookedFish.fishSize = fishSize;
+            hookedFish.size = fishSizeValue;
+            hookedFish.rarity = rarity;
+            //Set sell price as base value for now
+            hookedFish.sellPrice = fish.BaseValue;
+            currentFish = hookedFish;
+            DetermineDifficulty(fish, hookedFish);
         }
 
         
@@ -167,6 +186,9 @@ public class FishingController : MonoBehaviour
         reelWheel.StartReelWheel();
     }
 
+   
+
+    
     private void HandleReelComplete(bool caught)
     {
         Debug.Log(caught ? "Player caught the fish!" : "Player failed to catch the fish.");
@@ -184,7 +206,7 @@ public class FishingController : MonoBehaviour
             SpawnFailPopup();
         }
 
-        currentFish = null;
+        currentFishItem = null;
         currentBait = null;
         CurrentState = FishingState.Idle;
 
@@ -211,12 +233,13 @@ public class FishingController : MonoBehaviour
         activeLine = null;
     }
 
-    private void DetermineDifficulty(FishItem fish)
+    private void DetermineDifficulty(FishItem fishItem, CaughtFish fish)
     {
         float fishDifficulty = FishingMath.CalculateFishDifficultyProduct(
-            fish.BaseDifficulty,
-            fish.GetRarityMultiplier(),
-            fish.CustomDifficultyMultiplier
+            fishItem.BaseDifficulty,
+            fishItem.GetRarityMultiplier(fish.rarity),
+            fishItem.CustomDifficultyMultiplier,
+            fish.fishSize
         );
 
         float relativeDifficulty = fishDifficulty / playerStats.CatchStrength;
@@ -280,10 +303,10 @@ public class FishingController : MonoBehaviour
         CleanUpTackle();
         musicController.StopMusic();
 
-        Debug.Log($"Adding {currentFish.name} to inventory.");
-        playerInventory.AddItem(currentFish);
+        Debug.Log($"Adding {currentFishItem.name} to inventory.");
+        playerInventory.AddItem(currentFishItem);
         playerEquipment.RevertBaitBuff(currentBait);
-        OnFishCaught?.Invoke(currentFish.ItemID);
+        OnFishCaught?.Invoke(currentFish);
         TutorialManager.Instance.ShowIfUnseen("First_Catch", "You caught your first fish! Check it out by pressing [E] to open your backpack.");
         SpawnCatchPopup(currentFish);
     }
@@ -291,18 +314,27 @@ public class FishingController : MonoBehaviour
     public float GetProgress()
     {
         return FishingMath.CalculateHitProgress(
+
             playerStats.CatchStrength,
-            FishingMath.CalculateFishDifficultyProduct(currentFish.BaseDifficulty, currentFish.GetRarityMultiplier(), currentFish.CustomDifficultyMultiplier),
+
+            FishingMath.CalculateFishDifficultyProduct(
+                currentFishItem.BaseDifficulty, 
+                currentFish.fish.GetRarityMultiplier(currentFish.rarity), 
+                currentFishItem.CustomDifficultyMultiplier, 
+                currentFish.fishSize
+             ),
+
             FishingMath.CalculateNotesNeededAtParity(passingPercent, musicController.GetNoteCount())
+
         );
     }
 
     public float GetMissPenalty()
     {
-        return FishingMath.CalculateMissPenalty(currentFish.BaseDifficulty, FishingMath.CalculateNotesNeededAtParity(passingPercent, musicController.GetNoteCount()), missPenaltySeverity);
+        return FishingMath.CalculateMissPenalty(currentFishItem.BaseDifficulty, FishingMath.CalculateNotesNeededAtParity(passingPercent, musicController.GetNoteCount()), missPenaltySeverity);
     }
 
-    private void SpawnCatchPopup(FishItem fish)
+    private void SpawnCatchPopup(CaughtFish fish)
     {
         if (catchPopupPrefab == null || canvasTransform == null) return;
 

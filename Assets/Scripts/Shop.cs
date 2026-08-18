@@ -37,7 +37,8 @@ public class Shop : MonoBehaviour
         {
             if (slot.item is FishItem fish)//if its a fish
             {
-                totalValue += fish.SellValue * slot.itemQuantity; //add it to the sell value
+                //Only use base value for now, need to wire up CaughtFish
+                totalValue += fish.BaseValue * slot.itemQuantity; //add it to the sell value
             }
         }
         cartInventory.ClearInventory();//clear the cart

@@ -21,6 +21,16 @@ public class TutorialManager : MonoBehaviour
     private string TapNoteMessage = "This is a Tap Note. Hit it by pressing the Space Bar once it reaches the hit zone";
 
     public string NoteTypeTail => noteTypeTail;
+
+    public void SetplayTutorial(bool play)
+    {
+
+        this.playTutorial = play;
+        ShowIfUnseen("Cast_Line", "Try walking towards the lake and use [MB1] to cast your rod!");
+        GamePauseManager.Instance.ReleasePause();
+        MenuStateEvents.SetMenuOpen(false);
+
+    }
    private void Awake()
     {
         Instance = this;
@@ -28,7 +38,8 @@ public class TutorialManager : MonoBehaviour
 
     private void Start()
     {
-        ShowIfUnseen("Cast_Line", "Try walking towards the lake and use [MB1] to cast your rod!");
+        GamePauseManager.Instance.RequestPause();
+        MenuStateEvents.SetMenuOpen(true);
     }
 
     public bool HasSeen(string tutorialId)
