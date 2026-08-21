@@ -87,4 +87,12 @@ public class FishItem : Item
         }
     }
 
+    public FishItem.FishSize GetFishSizeFromSizeValue(float fishSizeValue)
+    {
+        //determine fish size based on value
+
+        //return medium for now
+        return FishItem.FishSize.Medium;
+    }
+
 }

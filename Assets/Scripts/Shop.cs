@@ -31,18 +31,20 @@ public class Shop : MonoBehaviour
 
     public void SellItems()
     {
-
         int totalValue = 0;
-        foreach (var slot in cartInventory.inventorySlots)//for each item in the cart
+        foreach (var slot in cartInventory.inventorySlots) // for each item in the cart
         {
-            if (slot.item is FishItem fish)//if its a fish
+            if (slot.IsCaughtFish)
             {
-                //Only use base value for now, need to wire up CaughtFish
-                totalValue += fish.BaseValue * slot.itemQuantity; //add it to the sell value
+                totalValue += slot.caughtFish.sellPrice; // unique instance, no quantity multiplier
+            }
+            else if (slot.item is FishItem fish) // if its a fish
+            {
+                totalValue += fish.BaseValue * slot.itemQuantity; // add it to the sell value
             }
         }
-        cartInventory.ClearInventory();//clear the cart
-        CurrencyManager.Instance.AwardCurrency(totalValue);//award money
+        cartInventory.ClearInventory(); // clear the cart
+        CurrencyManager.Instance.AwardCurrency(totalValue); // award money
     }
 
     public void DoTransaction()
@@ -69,16 +71,16 @@ public class Shop : MonoBehaviour
 
         if (CurrencyManager.Instance.SpendCurrency(totalCost))//if the player has enough money to spend, spend it
         {
-            
+
             TradingManager.Instance.SetToAndFrom(playerInventory, cartInventory);//set the players inventory to receive from the cart
             foreach (var slot in cartInventory.inventorySlots)//for each item in the cart
             {
                 if (slot.item != null)//if the item is not null
                 {
-                    if(slot.item is EquipmentItem equipmentItem)//if it is equipment
+                    if (slot.item is EquipmentItem equipmentItem)//if it is equipment
                     {
                         playerEquipment.EquipItem(equipmentItem);//equip it
-                        if(equipmentItem.getEquipmentType != EquipmentItem.EquipmentType.Bait)//if its not bait
+                        if (equipmentItem.getEquipmentType != EquipmentItem.EquipmentType.Bait)//if its not bait
                         {
                             //do nothing, we remove from cart later
                         }
@@ -86,7 +88,7 @@ public class Shop : MonoBehaviour
                         {
 
                             TradingManager.Instance.TradeItemStack(equipmentItem, slot.itemQuantity);
-                            
+
                         }
                     }
                     else//its not equipment
@@ -150,10 +152,10 @@ public class Shop : MonoBehaviour
 
     public void OpenBuyMenu()
     {
-        if (!TutorialManager.Instance.HasSeen("Buy")) 
+        if (!TutorialManager.Instance.HasSeen("Buy"))
         {
             string equipmentTypeNames = "";
-            foreach(var equipmentType in EquipmentItem.GetAllEquipmentTypes()) 
+            foreach (var equipmentType in EquipmentItem.GetAllEquipmentTypes())
             {
                 equipmentTypeNames = equipmentTypeNames + " " + equipmentType;
             }
@@ -173,18 +175,18 @@ public class Shop : MonoBehaviour
     {
         SetAllInactive();
         if (activeUI == "buy")
-       {
+        {
             leftInventoryUI.SetActive(true);
             rightInventoryUI.SetActive(true);
             utilUI.SetActive(true);
         }
-       else if(activeUI == "sell")
-       {
+        else if (activeUI == "sell")
+        {
             leftInventoryUI.SetActive(true);
             rightInventoryUI.SetActive(true);
             utilUI.SetActive(true);
-       }
-        else if(activeUI == "default")
+        }
+        else if (activeUI == "default")
         {
             shopDefaultUI.SetActive(true);
         }
@@ -207,10 +209,22 @@ public class Shop : MonoBehaviour
         // Return items from cart to their original inventories
         foreach (var slot in cartInventory.inventorySlots)
         {
-            for (int i = 0; i <= slot.itemQuantity; i++)
+            if (slot.IsCaughtFish)
             {
-
-                if (slot.item != null)
+                CaughtFish fish = slot.caughtFish;
+                if (buyOrSell)
+                {
+                    // Fish should never end up in the cart during a buy flow - defensive, shouldn't normally hit this.
+                    Debug.LogWarning("CaughtFish found in cart during buy flow - unexpected.");
+                }
+                else
+                {
+                    TradingManager.Instance.TradeCaughtFish(playerInventory, cartInventory, fish);
+                }
+            }
+            else if (slot.item != null)
+            {
+                for (int i = 0; i < slot.itemQuantity; i++) // fixed: was <=, which double-processed the last unit
                 {
                     if (buyOrSell)
                     {

@@ -13,13 +13,9 @@ public class ShopInventoryUI : InventoryDisplayBase
         CloseTooltip();
 
         Debug.Log("You clicked a slot from " + owner.ToString());
-        if (slot.item == null) return;
-        if (owner != thisInventory) return;
 
-        if (owner == thisInventory && slot.item != null)
-        {
-            Debug.Log("You clicked a slot from " + owner.ToString() + " with item: " + slot.item.name);
-        }
+        if (slot.item == null && !slot.IsCaughtFish) return; // slot is genuinely empty
+        if (owner != thisInventory) return;
 
         if (owner == playerInventory)
         {
@@ -30,7 +26,10 @@ public class ShopInventoryUI : InventoryDisplayBase
             else
             {
                 Debug.Log("Player clicked player inventory while selling items");
-                TradingManager.Instance.TradeItem(cartInventory, playerInventory, slot.item);
+                if (slot.IsCaughtFish)
+                    TradingManager.Instance.TradeCaughtFish(cartInventory, playerInventory, slot.caughtFish);
+                else
+                    TradingManager.Instance.TradeItem(cartInventory, playerInventory, slot.item);
             }
         }
         else if (owner == buyInventory)
@@ -39,6 +38,7 @@ public class ShopInventoryUI : InventoryDisplayBase
             if (shop.BuyOrSell)
             {
                 Debug.Log("Player clicked buy inventory while buying items");
+                // buyInventory only ever sells stackable Items (equipment/goods) - CaughtFish shouldn't appear here
                 TradingManager.Instance.TradeItem(cartInventory, buyInventory, slot.item);
             }
             else
@@ -56,7 +56,10 @@ public class ShopInventoryUI : InventoryDisplayBase
             else
             {
                 Debug.Log("Player clicked cart inventory while selling items");
-                TradingManager.Instance.TradeItem(playerInventory, cartInventory, slot.item);
+                if (slot.IsCaughtFish)
+                    TradingManager.Instance.TradeCaughtFish(playerInventory, cartInventory, slot.caughtFish);
+                else
+                    TradingManager.Instance.TradeItem(playerInventory, cartInventory, slot.item);
             }
         }
     }

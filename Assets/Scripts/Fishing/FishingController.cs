@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static FishItem;
 
 public class FishingController : MonoBehaviour
 {
@@ -33,10 +34,12 @@ public class FishingController : MonoBehaviour
     [SerializeField] PlayerStats playerStats;
     [SerializeField] PlayerEquipment playerEquipment;
     [SerializeField] RarityConfig rarityConfig;
+    [SerializeField] BonusReel bonusReel;
     [Header("Catch/Fail Feedback")]
     [SerializeField] private GameObject catchPopupPrefab;
     [SerializeField] private GameObject failPopupPrefab;
     [SerializeField] private RectTransform canvasTransform;
+    
 
     public FishingState CurrentState { get; private set; } = FishingState.Idle;
 
@@ -158,37 +161,21 @@ public class FishingController : MonoBehaviour
 
         FishItem.Rarity rarity = DetermineRarity();
 
-        if (fishingReward.GetRandomFishWithRarity(rarity) is FishItem fish)
+        if (fishingReward.GetRandomFishWithRarity(rarity) is FishItem species)
         {
-            currentFishItem = fish;
-            //determine FishSize and size, then calculate difficulty
-            FishItem.FishSize fishSize;
-            float fishSizeValue;
-            float minSize = fish.MinSize;
-            float maxSize = fish.MaxSize;
-            fishSizeValue = FishingMath.CalculateFishSize(minSize, maxSize);
-            fishSize = FishingMath.GetFishSizeCategory(fishSizeValue, maxSize);
-            CaughtFish hookedFish = new CaughtFish();
-            hookedFish.fish = fish;
-            hookedFish.fishSize = fishSize;
-            hookedFish.size = fishSizeValue;
-            hookedFish.rarity = rarity;
-            //Set sell price as base value for now
-            hookedFish.sellPrice = fish.BaseValue;
-            currentFish = hookedFish;
-            DetermineDifficulty(fish, hookedFish);
+            currentFishItem = species;
+            
+            currentFish = CaughtFishBuilder.BuildFish(species, rarity);
+            DetermineDifficulty(species, currentFish);
         }
-
-        
 
         fisherman.StartReeling();
         CurrentState = FishingState.Reeling;
         reelWheel.StartReelWheel();
     }
+    
 
    
-
-    
     private void HandleReelComplete(bool caught)
     {
         Debug.Log(caught ? "Player caught the fish!" : "Player failed to catch the fish.");
@@ -211,6 +198,7 @@ public class FishingController : MonoBehaviour
         CurrentState = FishingState.Idle;
 
         OnFishingEncounterEnded?.Invoke(caught);
+        bonusReel.Reset();
     }
 
     private void CancelCast()
@@ -303,13 +291,16 @@ public class FishingController : MonoBehaviour
         CleanUpTackle();
         musicController.StopMusic();
 
-        Debug.Log($"Adding {currentFishItem.name} to inventory.");
-        playerInventory.AddItem(currentFishItem);
+        currentFish.sellPrice += fishingReward.AwardBonusCurrency(currentFish.species.BaseValue, bonusReel.GetBonusHits(), musicController.GetNoteCount());
+
+        Debug.Log($"Adding {currentFish.species.ItemName}, of rarity {currentFish.rarity}, and of size {currentFish.fishSize} : {currentFish.size} to inventory.");
+        playerInventory.AddCaughtFish(currentFish);
         playerEquipment.RevertBaitBuff(currentBait);
         OnFishCaught?.Invoke(currentFish);
         TutorialManager.Instance.ShowIfUnseen("First_Catch", "You caught your first fish! Check it out by pressing [E] to open your backpack.");
         SpawnCatchPopup(currentFish);
     }
+
 
     public float GetProgress()
     {
@@ -319,7 +310,7 @@ public class FishingController : MonoBehaviour
 
             FishingMath.CalculateFishDifficultyProduct(
                 currentFishItem.BaseDifficulty, 
-                currentFish.fish.GetRarityMultiplier(currentFish.rarity), 
+                currentFish.species.GetRarityMultiplier(currentFish.rarity), 
                 currentFishItem.CustomDifficultyMultiplier, 
                 currentFish.fishSize
              ),

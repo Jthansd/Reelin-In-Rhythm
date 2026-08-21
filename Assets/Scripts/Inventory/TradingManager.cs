@@ -4,13 +4,13 @@ public class TradingManager : MonoBehaviour
 {
     private Inventory fromInventory;
     private Inventory toInventory;
+
     public static TradingManager Instance { get; internal set; }
 
     private void Awake()
     {
         Instance = this;
     }
-
 
     public void TradeItem(Item item)
     {
@@ -21,7 +21,7 @@ public class TradingManager : MonoBehaviour
             toInventory.AddItem(item);
         }
     }
-  
+
     public void TradeItem(Inventory to, Inventory from, Item item)
     {
         if (item == null) return;
@@ -29,6 +29,26 @@ public class TradingManager : MonoBehaviour
         {
             from.RemoveItem(item);
             to.AddItem(item);
+        }
+    }
+
+    public void TradeCaughtFish(CaughtFish fish)
+    {
+        if (fish == null) return;
+        if (fromInventory != null && toInventory != null)
+        {
+            fromInventory.RemoveCaughtFish(fish);
+            toInventory.AddCaughtFish(fish);
+        }
+    }
+
+    public void TradeCaughtFish(Inventory to, Inventory from, CaughtFish fish)
+    {
+        if (fish == null) return;
+        if (from != null && to != null)
+        {
+            from.RemoveCaughtFish(fish);
+            to.AddCaughtFish(fish);
         }
     }
 
@@ -45,7 +65,6 @@ public class TradingManager : MonoBehaviour
             TradeItem(to, from, item);
         }
     }
-
 
     public void TradeItemStack(Item item, int itemQuantity)
     {

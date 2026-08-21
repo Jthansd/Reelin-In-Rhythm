@@ -28,4 +28,14 @@ public class FishingReward : MonoBehaviour
     {
         return Random.Range(0, range);
     }
+
+    public int AwardBonusCurrency(int baseValue, int bonusHits, int totalNotes)
+    {
+        float amount = 0;
+        Debug.Log($"Base Value: {baseValue}, Bonus Hits: {bonusHits}, Total Notes: {totalNotes} ");
+        amount = baseValue * ((float)bonusHits/totalNotes);
+
+        Debug.Log("Awarding " + amount + " bonus currency");
+        return Mathf.FloorToInt(amount);
+    }
 }

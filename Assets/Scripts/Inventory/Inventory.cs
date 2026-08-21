@@ -34,22 +34,50 @@ public class Inventory : MonoBehaviour
     {
         for (int i = 0; i < inventorySlots.Count; i++)
         {
-            if (inventorySlots[i].item == null)
+            if (!inventorySlots[i].IsCaughtFish && inventorySlots[i].item == null)
             {
                 inventorySlots[i].item = item;
                 inventorySlots[i].itemQuantity = 1;
                 OnInventoryChanged?.Invoke();
                 return;
             }
-            else if (inventorySlots[i].item == item)
+            else if (!inventorySlots[i].IsCaughtFish && inventorySlots[i].item == item)
             {
                 inventorySlots[i].itemQuantity++;
                 OnInventoryChanged?.Invoke();
                 return;
             }
         }
-
         Debug.LogWarning("Inventory is full!");
+    }
+
+    public void AddCaughtFish(CaughtFish caughtFish)
+    {
+        for(int i = 0; i < inventorySlots.Count; i++)
+        {
+            if (!inventorySlots[i].IsCaughtFish && inventorySlots[i].item == null)
+            {
+                inventorySlots[i].caughtFish = caughtFish;
+                inventorySlots[i].itemQuantity = 1;
+                OnInventoryChanged?.Invoke();
+                return;
+            }
+        }
+        Debug.LogWarning("Inventory is Full");
+    }
+
+    public void RemoveCaughtFish(CaughtFish fish)
+    {
+        for (int i = 0; i < inventorySlots.Count; i++)
+        {
+            if (inventorySlots[i].caughtFish == fish) // reference equality - exact instance match
+            {
+                inventorySlots[i].caughtFish = null;
+                inventorySlots[i].itemQuantity = 0;
+                OnInventoryChanged?.Invoke();
+                return;
+            }
+        }
     }
 
     public void RemoveItem(Item item)
@@ -71,6 +99,8 @@ public class Inventory : MonoBehaviour
 
     public bool HasItem(Item item)
     {
+        if (item == null) return false;
+
         for (int i = 0; i < inventorySlots.Count; i++)
         {
             if (inventorySlots[i].item == item)
@@ -83,6 +113,8 @@ public class Inventory : MonoBehaviour
 
     public int GetItemQuantity(Item item)
     {
+        if (item == null) return 0;
+
         for (int i = 0; i < inventorySlots.Count; i++)
         {
             if (inventorySlots[i].item == item)
@@ -104,6 +136,7 @@ public class Inventory : MonoBehaviour
         {
             slot.item = null;
             slot.itemQuantity = 0;
+            slot.caughtFish = null;
         }
         OnInventoryChanged?.Invoke();
     }

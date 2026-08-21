@@ -1,7 +1,9 @@
 using System.Collections.Generic;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
+using UnityEngine.Rendering.Universal;
 
 public class NoteHitManager : MonoBehaviour
 {
@@ -12,6 +14,7 @@ public class NoteHitManager : MonoBehaviour
 
     [SerializeField] private ReelWheel reelWheel;
     [SerializeField] private RectTransform wheelTransform;
+    [SerializeField] private BonusReel bonusReel;
 
     private static readonly string[] NOTE_RESULTS = { "HIT", "EARLY", "LATE", "MISSED" };
 
@@ -32,6 +35,8 @@ public class NoteHitManager : MonoBehaviour
     [SerializeField] private Color LateColor = Color.white;
     [SerializeField] private Color EarlyColor = Color.white;
 
+    public bool fishMeterFull;
+    public bool perfect = true;
 
     private void SpawnFeedback(string message, Color color)
     {
@@ -141,6 +146,7 @@ public class NoteHitManager : MonoBehaviour
 
     public ReelWheelNote GetFrontNote()
     {
+        if (activeNotes.Count == 0) return null;
         return activeNotes[0].GetComponent<ReelWheelNote>();
     }
 
@@ -153,23 +159,20 @@ public class NoteHitManager : MonoBehaviour
 
     private void CheckSkipInput(GameObject note)
     {
+
         if (Keyboard.current.spaceKey.wasPressedThisFrame)
         {
             Debug.Log("ACTED ON SKIP!");
-            SpawnFeedback("MISS", MissColor);
-            reelWheel.UpdateFishDistance(false);
-            UnregisterNote(note);
-            Destroy(note);
+            MissedNote(note, "MISS");
             return;
+
         }
 
         if(IsTooLate(note))
         {
             Debug.Log("SKIP SUCCESS!");
-            SpawnFeedback("HIT", HitColor);
-            reelWheel.UpdateFishDistance(true);
-            UnregisterNote(note);
-            Destroy(note);
+            HitNote(note);
+
         }
     }
 
@@ -181,28 +184,23 @@ public class NoteHitManager : MonoBehaviour
             if(noteType == NoteType.Altkey)
             {
                 Debug.Log("Wrong Key!");
-                SpawnFeedback("MISS", MissColor);
-                reelWheel.UpdateFishDistance(false);
+                MissedNote(note, "MISS");
+                return;
             }
             else
             {
                 string result = IsNoteInHitWindow(note);
                 if (result == NOTE_RESULTS[0])
                 {
-                    Debug.Log(NOTE_RESULTS[0]);
-                    SpawnFeedback("HIT", HitColor);
-                    reelWheel.UpdateFishDistance(true);
+
+                    HitNote(note);
                 }
                 else
                 {
-                    Debug.Log("MISS!");
-                    SpawnFeedback("MISS", MissColor);
-                    reelWheel.UpdateFishDistance(false);
+                    MissedNote(note, "MISS");
                 }
+                
             }
-
-            UnregisterNote(note);
-            Destroy(note);
             return;
 
         }
@@ -211,8 +209,8 @@ public class NoteHitManager : MonoBehaviour
             if (noteType == NoteType.Tap)
             {
                 Debug.Log("Wrong Key!");
-                SpawnFeedback("MISS", MissColor);
-                reelWheel.UpdateFishDistance(false);
+                MissedNote(note, "MISS");
+                return;
             }
             else
             {
@@ -220,29 +218,20 @@ public class NoteHitManager : MonoBehaviour
                 if (result == NOTE_RESULTS[0])
                 {
                     Debug.Log(NOTE_RESULTS[0]);
-                    SpawnFeedback("HIT", HitColor);
-                    reelWheel.UpdateFishDistance(true);
+                    HitNote(note);
                 }
                 else
                 {
                     Debug.Log("MISS!");
-                    SpawnFeedback("MISS", MissColor);
-                    reelWheel.UpdateFishDistance(false);
+                    MissedNote(note, "MISS");
                 }
             }
-            UnregisterNote(note);
-            Destroy(note);
             return;
         }
-
-
         if (IsTooLate(note))
         {
-            Debug.Log("TOO LATE!");
-            SpawnFeedback("LATE", LateColor);
-            reelWheel.UpdateFishDistance(false);
-            UnregisterNote(note);
-            Destroy(note);
+            Debug.Log("TOO LATE");
+            MissedNote(note, "MISS");
         }
     }
 
@@ -262,10 +251,7 @@ public class NoteHitManager : MonoBehaviour
             else if (IsTooLate(note))
             {
                 Debug.Log("MISSED HOLD (never started)");
-                SpawnFeedback("MISS", MissColor);
-                reelWheel.UpdateFishDistance(false);
-                UnregisterNote(note);
-                Destroy(note);
+                MissedNote(note, "MISS");
             }
         }
         else
@@ -273,16 +259,15 @@ public class NoteHitManager : MonoBehaviour
             if (!spacePressed)
             {
                 Debug.Log("MISSED HOLD (released early)");
-                SpawnFeedback("EARLY", EarlyColor);
-                reelWheel.UpdateFishDistance(false);
+                MissedNote(note, "EARLY");
                 EndHold(note);
+                
             }
             else if (Time.time - holdStartTime >= noteComp.holdDuration)
             {
                 Debug.Log("HOLD SUCCESS");
-                SpawnFeedback("HIT", HitColor);
-                reelWheel.UpdateFishDistance(true);
-                EndHold(note);
+                HitNote(note);
+                EndHold(note);                
             }
         }
     }
@@ -338,8 +323,44 @@ public class NoteHitManager : MonoBehaviour
         nextNoteIndex = 0;
         isHolding = false;
         holdingNote = null;
+        fishMeterFull = false;
+        perfect = true;
         foreach (var note in activeNotes)
             if (note != null) Destroy(note);
         activeNotes.Clear();
+    }
+
+    private void MissedNote(GameObject note, string message)
+    {
+        if (note == null) return;
+        if(message == "EARLY")
+        {
+            SpawnFeedback(message, MissColor);
+        }
+        SpawnFeedback(message, MissColor);
+        if (!fishMeterFull)
+        {
+            fishMeterFull = reelWheel.UpdateFishDistance(false);
+        }
+        perfect = false;
+        UnregisterNote(note);
+        Destroy(note);
+    }
+
+    private void HitNote(GameObject note)
+    {
+        if (note == null) return;
+        SpawnFeedback("HIT!", HitColor);
+        if (!fishMeterFull)
+        {
+            fishMeterFull = reelWheel.UpdateFishDistance(true);
+        }
+        else
+        {
+            //reward for bonus note hit
+            bonusReel.BonusHit();
+        }
+        UnregisterNote(note);
+        Destroy(note);
     }
 }

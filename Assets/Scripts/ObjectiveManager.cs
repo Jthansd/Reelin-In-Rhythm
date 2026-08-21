@@ -62,7 +62,7 @@ public class ObjectiveManager : MonoBehaviour
     private void HandleFishCaught(CaughtFish caughtFish)
     {
         if(caughtFish == null) { return; }
-        FishItem fish = fishDatabase.GetItemByID(caughtFish.fish.ItemID) as FishItem;
+        FishItem fish = fishDatabase.GetItemByID(caughtFish.species.ItemID) as FishItem;
         if (fish == null) return;
 
         foreach (var objective in GetActiveObjectives())
@@ -92,7 +92,7 @@ public class ObjectiveManager : MonoBehaviour
 
                 case ObjectiveType.CatchAllOfRarity:
                     bool allCaught = fishDatabase.GetAllItemsOfRarity(objective.requiredRarity)
-                        .All(item => FishOPedia.Instance.IsDiscovered(item.ItemID));
+                        .All(item => FishOPedia.Instance.IsDiscovered(item.ItemID, objective.requiredRarity));
                     CheckComplete(objective, allCaught);
                     break;
             }

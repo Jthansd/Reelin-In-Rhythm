@@ -1,18 +1,9 @@
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 
 public class FishOPediaInventoryUI : InventoryDisplayBase
 {
-    private FishItem.Rarity currentRarity;
-    [SerializeField] TextMeshProUGUI rarityText;
-
-    public void SetRarityAndRefresh(FishItem.Rarity rarity)
-    {
-        rarityText.text = rarity.ToString();
-        currentRarity = rarity;
-        Refresh();
-    }
+    [SerializeField] FishOPediaManager FishOPediaManager;
 
     private void UpdateInventory()
     {
@@ -23,7 +14,7 @@ public class FishOPediaInventoryUI : InventoryDisplayBase
         }
 
         thisInventory.ClearInventory();
-        List<Item> pageItems = FishOPedia.Instance.GetAllObtainableFishOfRarity(currentRarity);
+        List<Item> pageItems = FishOPedia.Instance.GetAllObtainableFish();
 
         foreach (var item in pageItems)
         {
@@ -42,11 +33,23 @@ public class FishOPediaInventoryUI : InventoryDisplayBase
 
     protected override bool UseDiscoveryTint() => true;
 
-   
-
     public override void HandleSlotClicked(InventorySlot slot, Inventory owner)
     {
         CloseTooltip();
         // Just viewing the encyclopedia here - no interaction needed on click.
+        ViewEntry(slot);
+    }
+
+    public void ViewEntry(InventorySlot slot)
+    {
+        if (slot.IsCaughtFish)
+        {
+            Debug.LogWarning("Expected a FishItem");
+            return;
+        }
+        if(slot.item is FishItem fish)
+        {
+            FishOPediaManager.SwitchToEntry(fish);
+        }
     }
 }

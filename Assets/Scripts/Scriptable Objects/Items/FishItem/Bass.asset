@@ -16,5 +16,9 @@ MonoBehaviour:
   itemDescription: Not quite a guitar fish
   icon: {fileID: 21300000, guid: 57c32191532a2624c8001b4fc8711a72, type: 3}
   itemID: d017bff6-173e-432e-b147-d006338213de
-  sellValue: 5
-  rarity: common
+  value: 10
+  baseValue: 10
+  customDifficultyMultiplier: 1
+  maxSize: 60
+  minSize: 30
+  possibleRarities: 0000000001000000020000000300000004000000

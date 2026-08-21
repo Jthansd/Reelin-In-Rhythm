@@ -34,7 +34,7 @@ public abstract class InventoryDisplayBase : MonoBehaviour, IInventoryUI
         {
             GameObject slotGO = Instantiate(slotPrefab, slotGrid);
             InventorySlotUI slotUI = slotGO.GetComponent<InventorySlotUI>();
-            slotUI.Bind(slot, thisInventory, UseDiscoveryTint());
+            slotUI.Bind(slot, thisInventory, UseDiscoveryTint(), DiscoveryRarityContext());
             slotUI.OnSlotClicked += HandleSlotClicked;
             slotUI.OnSlotHoverEnter += HandleSlotHoverEnter;
             slotUI.OnSlotHoverExit += HandleSlotHoverExit;
@@ -44,11 +44,14 @@ public abstract class InventoryDisplayBase : MonoBehaviour, IInventoryUI
     // Only FishOPediaInventoryUI needs discovery tinting - defaults to off for everyone else.
     protected virtual bool UseDiscoveryTint() => false;
 
+    // The rarity being displayed, for species (non-CaughtFish) slots - null means "any rarity" fallback.
+    protected virtual FishItem.Rarity? DiscoveryRarityContext() => null;
+
     public void HandleSlotHoverEnter(InventorySlot slot, Inventory owner, Vector2 mousePosition)
     {
         CloseTooltip();
 
-        if (slot.item == null) return;
+        if (slot.item == null && !slot.IsCaughtFish) return;
 
         toolTip = Instantiate(toolTipPrefab, canvasTransform);
         RectTransform toolTipRect = toolTip.GetComponent<RectTransform>();
@@ -85,13 +88,38 @@ public abstract class InventoryDisplayBase : MonoBehaviour, IInventoryUI
         TextMeshProUGUI nameText = itemDetails.transform.Find("NameText").GetComponent<TextMeshProUGUI>();
         TextMeshProUGUI descText = itemDetails.transform.Find("DescriptionText").GetComponent<TextMeshProUGUI>();
         TextMeshProUGUI priceText = itemDetails.transform.Find("SellPriceText").GetComponent<TextMeshProUGUI>();
+        
+        if (slot.IsCaughtFish)
+        {
+            CaughtFish fish = slot.caughtFish;
 
-        bool isHiddenFish = UseDiscoveryTint()
-            && slot.item is FishItem fish
+            bool isHiddenFish = UseDiscoveryTint()
+                && FishOPedia.Instance != null
+                && !FishOPedia.Instance.IsDiscovered(fish.species, fish.rarity);
+
+            if (isHiddenFish)
+            {
+                nameText.text = "???";
+                descText.text = "???";
+                priceText.text = "???";
+                return;
+            }
+
+            nameText.text = fish.species.ItemName;
+            descText.text = $"{fish.rarity} - {fish.size:F1}cm\n{fish.species.ItemDescription}";
+            priceText.text = fish.sellPrice.ToString();
+            return;
+        }
+
+        FishItem.Rarity? discoveryRarityContext = DiscoveryRarityContext();
+        bool isHiddenItem = UseDiscoveryTint()
+            && slot.item is FishItem staticFish
             && FishOPedia.Instance != null
-            && !FishOPedia.Instance.IsDiscovered(fish);
+            && !(discoveryRarityContext.HasValue
+                ? FishOPedia.Instance.IsDiscovered(staticFish, discoveryRarityContext.Value)
+                : FishOPedia.Instance.IsDiscovered(staticFish));
 
-        if (isHiddenFish)
+        if (isHiddenItem)
         {
             nameText.text = "???";
             descText.text = "???";

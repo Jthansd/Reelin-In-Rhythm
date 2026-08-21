@@ -29,8 +29,8 @@ public class CatchResultPopup : MonoBehaviour, IPopup
     {
         if (fish != null)
         {
-            fishIcon.sprite = fish.fish.Icon;
-            nameText.text = fish.fish.ItemName;
+            fishIcon.sprite = fish.species.Icon;
+            nameText.text = fish.species.ItemName;
             rarityText.text = fish.rarity.ToString();
             cardBackground.color = GetRarityColor(fish.rarity);
         }

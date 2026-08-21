@@ -17,6 +17,8 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: 8b043851c958f4c429c216e542faaaf6, type: 3}
   itemID: 4cfc725e-7b28-4db6-bf9e-e622032ae4ea
   value: 10
-  sellValue: 10
-  rarityType: 2
+  baseValue: 10
   customDifficultyMultiplier: 1.25
+  maxSize: 140
+  minSize: 65
+  possibleRarities: 0000000001000000020000000300000004000000

@@ -1,4 +1,7 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class FishOPedia : MonoBehaviour
@@ -8,10 +11,11 @@ public class FishOPedia : MonoBehaviour
 
     [SerializeField] FishingController fishingController;
 
-    private HashSet<string> discoveredFishIds = new();
-
+    private readonly HashSet<(string speciesId, FishItem.Rarity rarity)> discoveredFishRarities = new();
+    private readonly Dictionary<string, float> biggestFish = new();
+    private readonly Dictionary<string, float> smallestFish = new();
     public List<Item> GetAllObtainableFish() => obtainableFish.GetAllItems();
-
+    
     public static FishOPedia Instance { get; private set; }
 
     private void Awake()
@@ -31,61 +35,105 @@ public class FishOPedia : MonoBehaviour
 
     private void HandleFishCaught(CaughtFish caughtFish)
     {
-        NewDiscovery(caughtFish.fish.ItemID);
+        NewDiscovery(caughtFish.species, caughtFish.rarity, caughtFish.size);
     }
 
+    // Discovered at this exact rarity.
+    public bool IsDiscovered(FishItem fish, FishItem.Rarity rarity)
+    {
+        return discoveredFishRarities.Contains((fish.ItemID, rarity));
+    }
 
+    // Discovered at any rarity - used where no specific rarity context is available.
     public bool IsDiscovered(FishItem fish)
     {
-        return discoveredFishIds.Contains(fish.ItemID);
+        return discoveredFishRarities.Any(d => d.speciesId == fish.ItemID);
     }
 
-    
-    public void NewDiscovery(FishItem fish)
+    public bool IsDiscovered(string id, FishItem.Rarity rarity)
     {
-        if (IsDiscovered(fish))
-        {
-            return;
-        }
-        else
-        {
-            discoveredFishIds.Add(fish.ItemID);
-        }
-
+        return discoveredFishRarities.Contains((id, rarity));
     }
 
-    public void NewDiscovery(string id)
+
+    public void NewDiscovery(FishItem species, FishItem.Rarity rarity, float size)
     {
-        if (IsDiscovered(id))
+        if (discoveredFishRarities.Add((species.ItemID, rarity)))
         {
-            Debug.Log("Not a new fish");
-            return;
+            Debug.Log($"New discovery: {species.ItemName} ({rarity})");
         }
-        else
+        RecordSize(species, size);
+    }
+
+    public void RecordSize(FishItem species, float size)
+    {
+        DetermineSizeRecord(species, size);
+        DetermineSmallSizeRecord(species, size);
+    }
+
+    public void DetermineSizeRecord(FishItem species, float size)
+    {
+        //Search through the set of current record sizes for the given species
+        if (!biggestFish.TryGetValue(species.ItemID, out float currentBiggest) || size > currentBiggest)
         {
-            discoveredFishIds.Add(id);
-            Debug.Log("New Fish discovered");
+            biggestFish[species.ItemID] = size;
         }
     }
 
-    public bool IsDiscovered(string id)
+    public void DetermineSmallSizeRecord(FishItem species, float size)
     {
-        return discoveredFishIds.Contains(id);
+        if(!smallestFish.TryGetValue(species.ItemID, out float currentSmallest) || size < currentSmallest)
+        {
+            smallestFish[species.ItemID] = size;
+        }
     }
 
     public List<Item> GetDiscoveredFish()
     {
         List<Item> fishList = new List<Item>();
-        foreach (var fishId in discoveredFishIds)
+        foreach (var speciesId in discoveredFishRarities.Select(d => d.speciesId).Distinct())
         {
-            fishList.Add(obtainableFish.GetItemByID(fishId));
+            fishList.Add(obtainableFish.GetItemByID(speciesId));
         }
 
         return fishList;
 
     }
 
-    // in FishOPedia.cs
-    public List<Item> GetAllObtainableFishOfRarity(FishItem.Rarity rarity) => obtainableFish.GetAllItemsOfRarity(rarity);
+    public float GetBiggestSize(string speciesId)
+    {
+        return biggestFish.TryGetValue(speciesId, out float biggest) ? biggest : 0f;
+    }
+
+    public float GetSmallestSize(string speciesId)
+    {
+        return smallestFish.TryGetValue(speciesId, out float smallest) ? smallest : 0f;
+    }
+
+    public int GetObtainableFishIndex(FishItem species)
+    {
+        return obtainableFish.GetAllItems().FindIndex(item => item.ItemID == species.ItemID);
+    }
+
+    public FishItem GetObtainableFishAt(int index)
+    {
+        List<Item> all = obtainableFish.GetAllItems();
+        if (index < 0 || index >= all.Count) return null;
+        return all[index] as FishItem;
+    }
+
+    public int GetObtainableFishCount() => obtainableFish.GetAllItems().Count;
+
+    public List<FishItem.Rarity> GetAllObtainedRarityOfSpecies(string speciesId)
+    {
+        List<FishItem.Rarity> results = new List<FishItem.Rarity>();
+        foreach (FishItem.Rarity rarity in Enum.GetValues(typeof(FishItem.Rarity)))
+        {
+            if(IsDiscovered(speciesId, rarity)){
+                results.Add(rarity);
+            }
+        }
+        return results;
+    }
 
 }

@@ -40,6 +40,8 @@ public class ReelWheel : MonoBehaviour
     private float currentPauseTime;
     private static float dontPause = 999f;
 
+    private bool playBonus;
+
 
     // Fired exactly once per reel attempt, when the outcome is decided. bool = fish caught.
     public event Action<bool> OnReelComplete;
@@ -71,10 +73,18 @@ public class ReelWheel : MonoBehaviour
         }
         else if (currentPauseTime - MusicController.Instance.GetCurrentMusicTime() <= .05f)
         {
+            ReelWheelNote frontNote = noteHitManager.GetFrontNote();
+            if (frontNote == null)
+            {
+                
+                currentPauseTime = dontPause;
+                return;
+            }
+
             Debug.Log("Its time to pause");
-            string noteTypeName = noteHitManager.GetFrontNote().noteType.ToString();
+            string noteTypeName = frontNote.noteType.ToString();
             TutorialManager.Instance.ShowIfUnseenNoteType(noteTypeName);
-            currentPauseTime = dontPause; // reset so future note-type tutorials can schedule again
+            currentPauseTime = dontPause;
         }
     }
 
@@ -247,17 +257,27 @@ public class ReelWheel : MonoBehaviour
         isRunning = false;
         reelWheelUI.SetActive(false);
         MusicController.Instance.StopMusic();
+
     }
 
    
     private void HandleSongFinished()
     {
-        // Song ran out before the meter resolved either way - treat as a failure.
         StopReelWheel();
-        OnReelComplete?.Invoke(false);
+
+        if (!playBonus)
+        {
+
+            OnReelComplete?.Invoke(false);
+        }
+        else
+        {
+            OnReelComplete?.Invoke(true);
+        }
+        
     }
 
-    public void UpdateFishDistance(bool hit)
+    public bool UpdateFishDistance(bool hit)
     {
         int result;
         if (hit)
@@ -271,21 +291,28 @@ public class ReelWheel : MonoBehaviour
 
         if (result == 0)
         {
-            return; // no resolution yet, still reeling
+            return false; // no resolution yet, still reeling
         }
 
-        StopReelWheel();
 
         if (result == -1)
         {
+            playBonus = false;
+            StopReelWheel();
             Debug.Log("Fish got away!");
             OnReelComplete?.Invoke(false);
         }
         else if (result == 1)
         {
             Debug.Log("Fish caught!");
-            OnReelComplete?.Invoke(true);
+            playBonus = true;
+            //no longer need to track fish distance
+            return true;
+            //OnReelComplete?.Invoke(true);
+            //fish is caught now but keep going
         }
+        playBonus = false;
+        return false;
     }
 
     public void SetBPM(float bpm)

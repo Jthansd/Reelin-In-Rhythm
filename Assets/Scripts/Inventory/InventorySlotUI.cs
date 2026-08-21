@@ -16,12 +16,30 @@ public class InventorySlotUI : MonoBehaviour, IPointerClickHandler, IPointerEnte
     public event Action<InventorySlot, Inventory, Vector2> OnSlotHoverEnter;
     public event Action<InventorySlot, Inventory> OnSlotHoverExit;
 
-    public void Bind(InventorySlot slot, Inventory owner, bool applyDiscoveryTint = false)
+    public void Bind(InventorySlot slot, Inventory owner, bool applyDiscoveryTint = false, FishItem.Rarity? discoveryRarityContext = null)
     {
         boundSlot = slot;
         ownerInventory = owner;
 
-        if (slot.item != null)
+        if (slot.IsCaughtFish)
+        {
+            CaughtFish fish = slot.caughtFish;
+
+            icon.sprite = fish.species.Icon;
+            icon.enabled = true;
+            qtyText.text = "";
+
+            if (applyDiscoveryTint && FishOPedia.Instance != null)
+            {
+                bool discovered = FishOPedia.Instance.IsDiscovered(fish.species, fish.rarity);
+                icon.color = discovered ? Color.white : Color.black;
+            }
+            else
+            {
+                icon.color = Color.white;
+            }
+        }
+        else if (slot.item != null)
         {
             icon.sprite = slot.item.Icon;
             icon.enabled = true;
@@ -29,7 +47,9 @@ public class InventorySlotUI : MonoBehaviour, IPointerClickHandler, IPointerEnte
 
             if (applyDiscoveryTint && slot.item is FishItem fish && FishOPedia.Instance != null)
             {
-                bool discovered = FishOPedia.Instance.IsDiscovered(fish);
+                bool discovered = discoveryRarityContext.HasValue
+                    ? FishOPedia.Instance.IsDiscovered(fish, discoveryRarityContext.Value)
+                    : FishOPedia.Instance.IsDiscovered(fish);
                 icon.color = discovered ? Color.white : Color.black;
             }
             else
@@ -43,7 +63,6 @@ public class InventorySlotUI : MonoBehaviour, IPointerClickHandler, IPointerEnte
             qtyText.text = "";
         }
     }
-
     public void OnPointerClick(PointerEventData eventData)
     {
         OnSlotClicked?.Invoke(boundSlot, ownerInventory);

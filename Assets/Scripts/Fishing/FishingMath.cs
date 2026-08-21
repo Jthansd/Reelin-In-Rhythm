@@ -6,6 +6,7 @@ public static class FishingMath
 
     private const float BaselineCatchStrength = 10f;
     private const float FishScalingFactor = 1.75f;
+    private static readonly float[] RarityMultipliers = { 1.0f, 1.25f, 1.5f, 1.75f, 2.0f };
     public static float CalculateHitProgress(float playerCatchStrength, float fishDifficulty, float hitsNeededAtParity)
     {
         return (playerCatchStrength / fishDifficulty) / hitsNeededAtParity;
@@ -52,5 +53,30 @@ public static class FishingMath
         index = Mathf.Clamp(index, 0, numSizes - 1); // safety net, explained below
 
         return (FishItem.FishSize)index;
+    }
+
+    public static float GetRarityMultiplier(FishItem.Rarity rarity)
+    {
+        int index = (int)rarity;
+        if (index < 0 || index >= RarityMultipliers.Length)
+        {
+            Debug.LogWarning($"No rarity multiplier defined for {rarity}, defaulting to 1.0x");
+            return 1.0f;
+        }
+        return RarityMultipliers[index];
+    }
+
+    public static int CalculateSellValue(int baseValue, FishItem.Rarity rarity, FishItem.FishSize size)
+    {
+        float rarityMultiplier = GetRarityMultiplier(rarity);
+
+        int numSizes = System.Enum.GetValues(typeof(FishItem.FishSize)).Length;
+        int sizeIndex = (int)size;
+        float sizeMidpoint = (numSizes - 1) / 2f;
+        float sizeAdjustmentFactor = 0.25f;
+
+        float sizeBonusFactor = Mathf.Abs(sizeIndex - sizeMidpoint) * sizeAdjustmentFactor;
+
+        return Mathf.FloorToInt(baseValue * rarityMultiplier * (1 + sizeBonusFactor));
     }
 }
