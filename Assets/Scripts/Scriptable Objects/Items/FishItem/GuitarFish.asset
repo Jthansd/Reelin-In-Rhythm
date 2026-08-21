@@ -21,4 +21,4 @@ MonoBehaviour:
   customDifficultyMultiplier: 1
   maxSize: 120
   minSize: 60
-  possibleRarities: 0000000001000000020000000300000005000000
+  possibleRarities: 00000000010000000200000003000000

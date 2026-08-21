@@ -59,7 +59,7 @@ public class FishOPediaManager : MonoBehaviour
 
         if (!willBeActive)
         {
-            ReturnToPedia(); // closing - make sure entries are cleaned up and we reopen fresh next time
+            ReturnToPedia(); 
         }
 
         fishOPedia.SetActive(willBeActive);
@@ -67,8 +67,7 @@ public class FishOPediaManager : MonoBehaviour
         MenuStateEvents.SetMenuOpen(willBeActive);
     }
 
-    // Opens the book to the species entry for the clicked fish. Its pair-mate (the fish before/after it
-    // in the obtainable fish list) is derived and shown on the other page, book-style.
+    // Opens the book to the species entry for the clicked fish. 
     public void SwitchToEntry(FishItem species)
     {
         int index = FishOPedia.Instance.GetObtainableFishIndex(species);
@@ -105,7 +104,7 @@ public class FishOPediaManager : MonoBehaviour
     private FishOPediaSpeciesEntry CreateEntryAt(Transform parent, int fishIndex)
     {
         FishItem species = FishOPedia.Instance.GetObtainableFishAt(fishIndex);
-        if (species == null) return null; // ran off the end (or start) of the list - no pair-mate to show
+        if (species == null) return null; 
 
         GameObject entryGO = Instantiate(speciesEntryPrefab, parent);
         RectTransform rt = entryGO.GetComponent<RectTransform>();

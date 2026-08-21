@@ -11,8 +11,7 @@ public class FishItem : Item
         Uncommon, // 10
         Rare, //25
         SuperRare, //50
-        Legendary, //75
-        Impossible //101
+        Legendary //75
     }
 
     public enum FishSize
@@ -60,10 +59,7 @@ public class FishItem : Item
 
     public static List<Rarity> GetPlayerFacingRarities()
     {
-        return Enum.GetValues(typeof(Rarity))
-            .Cast<Rarity>()
-            .Where(r => r != Rarity.Impossible)
-            .ToList();
+        return Enum.GetValues(typeof(Rarity)).Cast<Rarity>().ToList();
     }
 
     public int GetRarityMultiplier(FishItem.Rarity rarityType)
@@ -80,8 +76,6 @@ public class FishItem : Item
                 return 3;
             case Rarity.Legendary:
                 return 4;
-            case Rarity.Impossible:
-                return 5;
             default:
                 return 0;
         }

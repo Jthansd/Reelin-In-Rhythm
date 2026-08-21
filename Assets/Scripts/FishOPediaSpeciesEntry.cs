@@ -68,7 +68,7 @@ public class FishOPediaSpeciesEntry : MonoBehaviour
 
             if (possibleRarities.Contains(currentRarity))
             {
-                rarityContainer.color = baseColor * 0.8f;
+                rarityContainer.color = baseColor * 0.5f;
             }
             if (discoveredRarities.Contains(currentRarity))
             {
