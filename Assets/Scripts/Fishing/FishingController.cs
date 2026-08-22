@@ -21,7 +21,6 @@ public class FishingController : MonoBehaviour
     private float checkInterval = 2f;
 
     private FishItem currentFishItem;
-    private EquipmentItem currentBait;
 
     private CaughtFish currentFish;
 
@@ -87,8 +86,6 @@ public class FishingController : MonoBehaviour
         Rigidbody rb = activeBobber.GetComponent<Rigidbody>();
         rb.linearVelocity = poleTip.forward * castForce;
 
-        ApplyBait();
-
         CurrentState = FishingState.WaitingForBite;
     }
 
@@ -149,23 +146,23 @@ public class FishingController : MonoBehaviour
         Debug.Log("Fish hooked!");
         CurrentState = FishingState.Hooked;
 
-        if (playerEquipment.ConsumeBait(out EquipmentItem baitUsed))
+        if (!playerEquipment.ConsumeBait(out _))
         {
-            currentBait = baitUsed;
-        }
-        else
-        {
-            currentBait = null;
             Debug.Log("No bait equipped.");
         }
 
-        FishItem.Rarity rarity = DetermineRarity();
+        FishSelectionContext context = new FishSelectionContext();
+        foreach (var effect in playerEquipment.GetActiveEffects())
+        {
+            effect.OnBeforeFishSelected(context);
+        }
+
+        FishItem.Rarity rarity = DetermineRarity(context);
 
         if (fishingReward.GetRandomFishWithRarity(rarity) is FishItem species)
         {
             currentFishItem = species;
-            
-            currentFish = CaughtFishBuilder.BuildFish(species, rarity);
+            currentFish = CaughtFishBuilder.BuildFish(species, rarity, context);
             DetermineDifficulty(species, currentFish);
         }
 
@@ -173,9 +170,8 @@ public class FishingController : MonoBehaviour
         CurrentState = FishingState.Reeling;
         reelWheel.StartReelWheel();
     }
-    
 
-   
+
     private void HandleReelComplete(bool caught)
     {
         Debug.Log(caught ? "Player caught the fish!" : "Player failed to catch the fish.");
@@ -189,12 +185,10 @@ public class FishingController : MonoBehaviour
         else
         {
             CleanUpTackle();
-            playerEquipment.RevertBaitBuff(currentBait);
             SpawnFailPopup();
         }
 
         currentFishItem = null;
-        currentBait = null;
         CurrentState = FishingState.Idle;
 
         OnFishingEncounterEnded?.Invoke(caught);
@@ -205,7 +199,6 @@ public class FishingController : MonoBehaviour
     {
         Debug.Log("Reeling In (cancelled - no bite yet)!");
         CleanUpTackle();
-        playerEquipment.RevertBaitBuff();
         CurrentState = FishingState.Idle;
     }
 
@@ -245,14 +238,16 @@ public class FishingController : MonoBehaviour
         Debug.Log($"Fish difficulty: {fishDifficulty}, relative: {relativeDifficulty}, tier chosen: {tier}");
     }
 
-    private void ApplyBait()
-    {
-        playerEquipment.ApplyBaitBonus();
-    }
-
-    public FishItem.Rarity DetermineRarity()
+    private FishItem.Rarity DetermineRarity(FishSelectionContext context)
     {
         Debug.Log("Determine Rarity was called");
+
+        if (context.forcedRarity.HasValue)
+        {
+            Debug.Log($"Rarity forced to {context.forcedRarity.Value} by equipped effect.");
+            return context.forcedRarity.Value;
+        }
+
         float strength = playerStats.RarityStrength;
 
         List<(FishItem.Rarity rarity, float weight)> weightedPool = new();
@@ -295,7 +290,6 @@ public class FishingController : MonoBehaviour
 
         Debug.Log($"Adding {currentFish.species.ItemName}, of rarity {currentFish.rarity}, and of size {currentFish.fishSize} : {currentFish.size} to inventory.");
         playerInventory.AddCaughtFish(currentFish);
-        playerEquipment.RevertBaitBuff(currentBait);
         OnFishCaught?.Invoke(currentFish);
         TutorialManager.Instance.ShowIfUnseen("First_Catch", "You caught your first fish! Check it out by pressing [E] to open your backpack.");
         SpawnCatchPopup(currentFish);

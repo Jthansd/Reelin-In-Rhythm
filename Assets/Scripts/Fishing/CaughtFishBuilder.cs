@@ -3,7 +3,7 @@ using UnityEngine;
 public static class CaughtFishBuilder
 {
 
-    public static CaughtFish BuildFish(FishItem species, FishItem.Rarity rarity)
+    public static CaughtFish BuildFish(FishItem species, FishItem.Rarity rarity, FishSelectionContext context)
     {
         CaughtFish hookedFish = new CaughtFish();
         //determine FishSize and size, then calculate difficulty
@@ -13,9 +13,18 @@ public static class CaughtFishBuilder
         float maxSize = species.MaxSize;
 
         //calculate size
-
-        fishSizeValue = FishingMath.CalculateFishSize(minSize, maxSize);
-        fishSize = FishingMath.GetFishSizeCategory(fishSizeValue, maxSize);
+        if(context.forcedSize.HasValue)
+        {
+            FishItem.FishSize size = context.forcedSize.Value;
+            fishSizeValue = FishingMath.CalculateSizeGivenForcedSize(species, size);
+            fishSize = size;
+        }
+        else
+        {
+            fishSizeValue = FishingMath.CalculateFishSize(minSize, maxSize);
+            fishSize = FishingMath.GetFishSizeCategory(fishSizeValue, maxSize);
+        }
+            
 
         //calculate the sell price
         int sellPrice = FishingMath.CalculateSellValue(species.BaseValue, rarity, fishSize);

@@ -1,8 +1,8 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerEquipment : MonoBehaviour
 {
-    [SerializeField] private PlayerStats playerStats;
     [SerializeField] private EquipmentManager equipmentManager;
     [SerializeField] private Inventory playerInventory;
 
@@ -12,75 +12,41 @@ public class PlayerEquipment : MonoBehaviour
     public EquipmentItem Hook => equipmentManager.GetEquipped(EquipmentItem.EquipmentType.Hook);
     public EquipmentItem Bait => equipmentManager.GetEquipped(EquipmentItem.EquipmentType.Bait);
 
+    private Dictionary<string, IEquipmentEffect> activeEffects = new();
+
     public void EquipItem(EquipmentItem equipmentItem)
     {
         EquipmentItem oldItem = equipmentManager.GetEquipped(equipmentItem.getEquipmentType);
-
         if (oldItem != null)
-            RemoveEquipmentBonus(oldItem);
-
-        if (equipmentItem.getEquipmentType == EquipmentItem.EquipmentType.Bait)
         {
-            // Bait is consumed on use - its bonus is applied at cast time, not equip time.
+            RemoveEffect(oldItem);
         }
-        else
+
+        string slotKey = equipmentItem.getEquipmentType.ToString();
+        IEquipmentEffect effect = equipmentItem.CreateEffectInstance();
+        if (effect != null)
         {
-            ApplyEquipmentBonus(equipmentItem);
+            activeEffects[slotKey] = effect;
         }
 
         equipmentManager.SwapEquipment(equipmentItem);
     }
 
-    private void ApplyEquipmentBonus(EquipmentItem item)
+    private void RemoveEffect(EquipmentItem item)
     {
-        string slotKey = item.getEquipmentType.ToString();
-        playerStats.SetCatchStrengthMultiplier(slotKey, item.CatchStrengthMultiplier);
-        playerStats.SetRarityMultiplier(slotKey, item.RarityMultiplier);
-        playerStats.AdjustLuck(item.LuckBonus);
+        activeEffects.Remove(item.getEquipmentType.ToString());
     }
 
-    private void RemoveEquipmentBonus(EquipmentItem item)
-    {
-        string slotKey = item.getEquipmentType.ToString();
-        playerStats.ClearCatchStrengthMultiplier(slotKey);
-        playerStats.ClearRarityMultiplier(slotKey);
-        playerStats.AdjustLuck(-item.LuckBonus);
-    }
+    public IEnumerable<IEquipmentEffect> GetActiveEffects() => activeEffects.Values;
 
     private void UnequipItem(EquipmentItem.EquipmentType type)
     {
         EquipmentItem item = equipmentManager.GetEquipped(type);
-        if (type != EquipmentItem.EquipmentType.Bait)
+        if (item != null)
         {
-            RemoveEquipmentBonus(item);
+            RemoveEffect(item);
         }
         equipmentManager.Unequip(type);
-    }
-
-    public void ApplyBaitBonus()
-    {
-        EquipmentItem bait = Bait;
-        if (bait != null)
-        {
-            playerStats.SetCatchStrengthMultiplier("Bait", bait.CatchStrengthMultiplier);
-            playerStats.SetRarityMultiplier("Bait", bait.RarityMultiplier);
-            playerStats.AdjustLuck(bait.LuckBonus);
-        }
-    }
-
-    public void RevertBaitBuff(EquipmentItem bait)
-    {
-        if (bait != null)
-        {
-            playerStats.ClearCatchStrengthMultiplier("Bait");
-            playerStats.ClearRarityMultiplier("Bait");
-            playerStats.AdjustLuck(-bait.LuckBonus);
-        }
-    }
-
-    public void RevertBaitBuff()
-    {
-        RevertBaitBuff(Bait);
     }
 
     public bool ConsumeBait(out EquipmentItem baitUsed)

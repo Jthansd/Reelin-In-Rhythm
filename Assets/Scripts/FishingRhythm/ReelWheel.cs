@@ -42,6 +42,9 @@ public class ReelWheel : MonoBehaviour
 
     private bool playBonus;
 
+    [SerializeField] private PlayerEquipment playerEquipment;
+
+
 
     // Fired exactly once per reel attempt, when the outcome is decided. bool = fish caught.
     public event Action<bool> OnReelComplete;
@@ -274,26 +277,35 @@ public class ReelWheel : MonoBehaviour
         {
             OnReelComplete?.Invoke(true);
         }
+        playBonus = false;
         
     }
 
-    public bool UpdateFishDistance(bool hit)
+    public bool UpdateFishDistance(bool hit, out bool wasAbsorbed)
     {
+        wasAbsorbed = false;
         int result;
+
         if (hit)
         {
             result = fishMeter.Advance(hit, progressAmount);
         }
         else
         {
-            result = fishMeter.Advance(hit,  penaltyAmount);
+            float effectivePenalty = penaltyAmount;
+            foreach (var effect in playerEquipment.GetActiveEffects())
+            {
+                effectivePenalty = effect.OnNoteMissed(fishingController, effectivePenalty);
+            }
+
+            wasAbsorbed = effectivePenalty <= 0f; // fully shielded - no real penalty applied
+            result = fishMeter.Advance(hit, effectivePenalty);
         }
 
         if (result == 0)
         {
-            return false; // no resolution yet, still reeling
+            return false;
         }
-
 
         if (result == -1)
         {
@@ -306,10 +318,7 @@ public class ReelWheel : MonoBehaviour
         {
             Debug.Log("Fish caught!");
             playBonus = true;
-            //no longer need to track fish distance
             return true;
-            //OnReelComplete?.Invoke(true);
-            //fish is caught now but keep going
         }
         playBonus = false;
         return false;

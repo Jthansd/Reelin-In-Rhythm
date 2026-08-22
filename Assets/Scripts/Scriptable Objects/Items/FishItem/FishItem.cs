@@ -89,4 +89,18 @@ public class FishItem : Item
         return FishItem.FishSize.Medium;
     }
 
+    public float GetSizeLowerBound(FishSize size)
+    {
+        int numSizes = Enum.GetValues(typeof(FishSize)).Length;
+        int sizeIndex = (int)size;
+
+        float bandWidth = (MaxSize - MinSize) / numSizes;
+        return MinSize + (bandWidth * sizeIndex);
+    }
+
+    public float GetSizeUpperBound(FishSize size)
+    {
+        return GetSizeLowerBound(size) + ((MaxSize - MinSize) / System.Enum.GetValues(typeof(FishSize)).Length);
+    }
+
 }

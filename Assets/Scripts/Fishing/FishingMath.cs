@@ -79,4 +79,9 @@ public static class FishingMath
 
         return Mathf.FloorToInt(baseValue * rarityMultiplier * (1 + sizeBonusFactor));
     }
+
+    public static float CalculateSizeGivenForcedSize(FishItem species, FishItem.FishSize size)
+    {
+        return CalculateFishSize(species.GetSizeLowerBound(size), species.GetSizeUpperBound(size));
+    }
 }

@@ -34,6 +34,8 @@ public class NoteHitManager : MonoBehaviour
     [SerializeField] private Color MissColor = Color.white;
     [SerializeField] private Color LateColor = Color.white;
     [SerializeField] private Color EarlyColor = Color.white;
+    [SerializeField] private PlayerEquipment playerEquipment;
+
 
     public bool fishMeterFull;
     public bool perfect = true;
@@ -333,16 +335,24 @@ public class NoteHitManager : MonoBehaviour
     private void MissedNote(GameObject note, string message)
     {
         if (note == null) return;
-        if(message == "EARLY")
-        {
-            SpawnFeedback(message, MissColor);
-        }
-        SpawnFeedback(message, MissColor);
+
+        bool wasAbsorbed = false;
+
         if (!fishMeterFull)
         {
-            fishMeterFull = reelWheel.UpdateFishDistance(false);
+            fishMeterFull = reelWheel.UpdateFishDistance(false, out wasAbsorbed);
         }
-        perfect = false;
+
+        if (!wasAbsorbed)
+        {
+            if (message == "EARLY")
+            {
+                SpawnFeedback(message, MissColor);
+            }
+            SpawnFeedback(message, MissColor);
+        }
+
+        perfect = false; // streak breaks regardless of shield
         UnregisterNote(note);
         Destroy(note);
     }
@@ -353,7 +363,7 @@ public class NoteHitManager : MonoBehaviour
         SpawnFeedback("HIT!", HitColor);
         if (!fishMeterFull)
         {
-            fishMeterFull = reelWheel.UpdateFishDistance(true);
+            fishMeterFull = reelWheel.UpdateFishDistance(true, out _);
         }
         else
         {
