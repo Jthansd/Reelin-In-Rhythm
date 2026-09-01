@@ -14,8 +14,9 @@ public class StatBoost : ScriptableObject
     public string title;
     public string description;
     public StatBoostType statType;
+    public Sprite icon;
 
-    public int maxPurchases = 5;
+    public int maxPurchases = 10;
 
     // For Luck: flat amount added per purchase.
     // For CatchStrength/RarityStrength: multiplier bonus per purchase, e.g. 0.1 = +10% per level.

@@ -50,4 +50,9 @@ public class CurrencyManager : MonoBehaviour
         Debug.Log($"Spent {amount} currency. New total: {currency}");
         return true;
     }
+
+    internal bool HasCurrency(int value)
+    {
+        return GetCurrency() >= value;
+    }
 }

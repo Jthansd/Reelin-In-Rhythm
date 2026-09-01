@@ -1,10 +1,13 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class PlayerEquipment : MonoBehaviour
 {
     [SerializeField] private EquipmentManager equipmentManager;
     [SerializeField] private Inventory playerInventory;
+    [SerializeField] EquipmentShopUI equipmentShopUI;
 
     public EquipmentItem Rod => equipmentManager.GetEquipped(EquipmentItem.EquipmentType.Rod);
     public EquipmentItem Reel => equipmentManager.GetEquipped(EquipmentItem.EquipmentType.Reel);
@@ -13,6 +16,24 @@ public class PlayerEquipment : MonoBehaviour
     public EquipmentItem Bait => equipmentManager.GetEquipped(EquipmentItem.EquipmentType.Bait);
 
     private Dictionary<string, IEquipmentEffect> activeEffects = new();
+
+    private List<string> ownedEquipmentIds = new();
+
+
+
+    private void Awake()
+    {
+        equipmentShopUI.OnEquipmentPurchase += HandleEquipmentPurchase;
+    }
+
+    private void HandleEquipmentPurchase(string equipmentId)
+    {
+        if (!ownedEquipmentIds.Contains(equipmentId))
+        {
+            ownedEquipmentIds.Add(equipmentId);
+        }
+
+    }
 
     public void EquipItem(EquipmentItem equipmentItem)
     {
@@ -74,5 +95,10 @@ public class PlayerEquipment : MonoBehaviour
             consumed = false;
         }
         return consumed;
+    }
+
+    public bool Owns(string equipmentItemId)
+    {
+        return ownedEquipmentIds.Contains(equipmentItemId);
     }
 }

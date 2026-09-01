@@ -6,7 +6,7 @@ public class FishMeter : MonoBehaviour
 
     public float advanceSpeed = 0.1f;
     public float decaySpeed = 0.1f;
-    private float startingProgress = 0.5f;
+    private float startingProgress = 1f;
     
 
 
@@ -14,11 +14,11 @@ public class FishMeter : MonoBehaviour
     {
         if (hit)
         {
-            return FishingProgress.UpdateProgress(-progress / 2);
+            return FishingProgress.UpdateProgress(-progress);
         }
         else
         {
-            return FishingProgress.UpdateProgress(progress/2);
+            return FishingProgress.UpdateProgress(progress);
         }
         
     }

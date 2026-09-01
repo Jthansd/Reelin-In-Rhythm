@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d1c6c6d9464a4ad49ab0c76f3d71f515, type: 3}
+  m_Name: Intermediate Rod
+  m_EditorClassIdentifier: Assembly-CSharp::EquipmentItem
+  itemName: Intermediate Rod
+  itemDescription: For those who are familiar with the fishing basics
+  icon: {fileID: 21300000, guid: c98664af1a803034e8c415e0e0fa69ce, type: 3}
+  itemID: 46a0ff22-d08c-4a90-a1e5-ddc5c3f2de39
+  value: 100
+  equipmentType: 0
+  effectType: 1
+  effectIntParam: 5
+  effectFloatParam: 0
+  effectRarityParam: 0
+  effectFishSizeParam: 0
+  unlockType: 1
+  requiredPreviousItem: {fileID: 11400000, guid: 8498f62610266c842ab09a2a5c720974, type: 2}
+  requiredObjectiveId: 

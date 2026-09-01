@@ -306,14 +306,6 @@ public class ReelWheel : MonoBehaviour
         {
             return false;
         }
-
-        if (result == -1)
-        {
-            playBonus = false;
-            StopReelWheel();
-            Debug.Log("Fish got away!");
-            OnReelComplete?.Invoke(false);
-        }
         else if (result == 1)
         {
             Debug.Log("Fish caught!");

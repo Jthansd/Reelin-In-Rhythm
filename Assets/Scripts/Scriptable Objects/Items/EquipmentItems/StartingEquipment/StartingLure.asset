@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d1c6c6d9464a4ad49ab0c76f3d71f515, type: 3}
+  m_Name: StartingLure
+  m_EditorClassIdentifier: Assembly-CSharp::EquipmentItem
+  itemName: Lure
+  itemDescription: Just a fishing lure
+  icon: {fileID: 21300000, guid: 6433a417b025801409eaedca3b65c357, type: 3}
+  itemID: 659f47cb-f2f0-4787-b41c-8e3505777a0f
+  value: 0
+  equipmentType: 5
+  effectType: 0
+  effectIntParam: 0
+  effectFloatParam: 0
+  effectRarityParam: 0
+  effectFishSizeParam: 0

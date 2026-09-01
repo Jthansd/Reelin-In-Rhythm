@@ -15,12 +15,47 @@ public class EquipmentItem : Item
     [SerializeField] private FishItem.Rarity effectRarityParam;
     [SerializeField] private FishItem.FishSize effectFishSizeParam;
 
+    [Header("Unlock Condition")]
+    [SerializeField] private UnlockConditionType unlockType = UnlockConditionType.None;
+    [SerializeField] private EquipmentItem requiredPreviousItem; // used by RequiresPreviousItemOwned
+    [SerializeField] private string requiredObjectiveId; // used by RequiresQuestComplete
+
     public enum EquipmentType
     {
-        Rod, Reel, Bait, Line, Hook
+        Rod, Reel, Bait, Line, Hook, Lure
+    }
+
+    public enum UnlockConditionType
+    {
+        None,
+        Purchase,
+        Objective
     }
 
     public EquipmentType getEquipmentType => equipmentType;
+    public UnlockConditionType getUnlockType => unlockType;
+
+    public IUnlockCondition CreateUnlockRequirement(PlayerEquipment playerEquipment)
+    {
+        switch (unlockType)
+        {
+            case UnlockConditionType.Purchase:
+                if (requiredPreviousItem != null)
+                {
+                    string id = requiredPreviousItem.ItemID;
+                    return new PurchaseUnlockCondition(id, playerEquipment);
+                }
+                return null;
+            case UnlockConditionType.Objective:
+                if(requiredObjectiveId != null)
+                {
+                    return new ObjectiveUnlockCondition(requiredObjectiveId);
+                }
+                return null;
+            default:
+                return null;
+        }
+    }
 
     public static List<EquipmentType> GetAllEquipmentTypes()
     {

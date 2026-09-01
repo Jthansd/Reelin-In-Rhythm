@@ -15,19 +15,15 @@ public class ProgressBar : MonoBehaviour
 
     public int UpdateProgress(float amount)
     {
-        SetProgress(this.progress + amount);
-        if(this.progress < 1f && this.progress > 0f)
+        float target = this.progress + amount;
+        SetProgress(target);
+
+        if (this.progress <= 0f)
         {
-            return 0; // Progress bar is neither full nor empty
+            return 1; // caught - meter emptied
         }
-        else if(this.progress <= 0f)
-        {
-            return 1; // Progress bar is empty
-        }
-        else
-        {
-            return -1; // Progress bar is full
-        }
+
+        return 0; // still in progress (overflow above 1.0 is just clamped visually, no loss state)
     }
 
     void Start()
@@ -35,17 +31,9 @@ public class ProgressBar : MonoBehaviour
         SetProgress(progress);
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
     void OnValidate()
     {
         if (fill != null)
             fill.fillAmount = progress;
     }
-
-    
 }

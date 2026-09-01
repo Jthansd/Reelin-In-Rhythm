@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d1c6c6d9464a4ad49ab0c76f3d71f515, type: 3}
+  m_Name: Basic Rod
+  m_EditorClassIdentifier: Assembly-CSharp::EquipmentItem
+  itemName: Basic Rod
+  itemDescription: Just a typical starting rod
+  icon: {fileID: 21300000, guid: 3fac21d2720571c439070f39611c5b45, type: 3}
+  itemID: 09baca87-c22c-4d66-87a8-65e302091241
+  value: 100
+  equipmentType: 0
+  effectType: 1
+  effectIntParam: 3
+  effectFloatParam: 0
+  effectRarityParam: 0
+  effectFishSizeParam: 0
+  unlockType: 1
+  requiredPreviousItem: {fileID: 11400000, guid: 34647970e3a1a2d4da440c16e9dcd4ac, type: 2}
+  requiredObjectiveId: 

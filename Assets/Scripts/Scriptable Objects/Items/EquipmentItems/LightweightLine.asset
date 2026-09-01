@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: LightweightLine
   m_EditorClassIdentifier: Assembly-CSharp::EquipmentItem
   itemName: Lightweight Line
-  itemDescription: Increases Catch Strength and your chance of catching rare fish
-    both by 15%
+  itemDescription: All fish hooked are tiny
   icon: {fileID: 21300000, guid: 8f53d0591a20156439cc2a2dd8bb94f0, type: 3}
   itemID: 9668da8e-9020-4fa6-9eb1-4b6082b4a1f0
   value: 5

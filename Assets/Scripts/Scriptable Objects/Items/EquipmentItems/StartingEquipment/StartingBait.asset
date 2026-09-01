@@ -10,15 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d1c6c6d9464a4ad49ab0c76f3d71f515, type: 3}
-  m_Name: Leaf Rod
+  m_Name: StartingBait
   m_EditorClassIdentifier: Assembly-CSharp::EquipmentItem
-  itemName: Leaf Rod
-  itemDescription: Increases Catch Strength by 15% and your chance of catching rare
-    fish by 25%
-  icon: {fileID: 21300000, guid: e60187ef8745e3345a0fcc9832be7da2, type: 3}
-  itemID: 00962856-ce4c-4ee3-9a20-37b36509b0ac
-  value: 10
-  equipmentType: 0
-  effectType: 1
-  effectIntParam: 3
+  itemName: Earth Worm
+  itemDescription: Gotta have some of these if I want to catch something
+  icon: {fileID: 21300000, guid: 7cb30df394856d74a81a3ef87972090b, type: 3}
+  itemID: af67a3ba-d82a-423b-9872-fe0ed0853ebc
+  value: 0
+  equipmentType: 2
+  effectType: 0
+  effectIntParam: 0
   effectFloatParam: 0
+  effectRarityParam: 0
+  effectFishSizeParam: 0

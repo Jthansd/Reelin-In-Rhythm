@@ -16,7 +16,8 @@ MonoBehaviour:
   title: Rarity Boost
   description: boosts your chances of catching rarer fish
   statType: 2
-  maxPurchases: 5
-  perPurchaseAmount: 0
-  baseCost: 100
+  icon: {fileID: 21300000, guid: 53b4f930c46172e40bf93c44e1de0e76, type: 3}
+  maxPurchases: 10
+  perPurchaseAmount: 1
+  baseCost: 1
   costGrowthFactor: 1.5

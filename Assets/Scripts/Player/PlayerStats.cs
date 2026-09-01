@@ -53,4 +53,10 @@ public class PlayerStats : MonoBehaviour
     {
         rarityMultipliers.Remove(sourceId);
     }
+
+    [ContextMenu("Add Money")]
+    public void AddMoney()
+    {
+        CurrencyManager.Instance.AwardCurrency(100);
+    }
 }

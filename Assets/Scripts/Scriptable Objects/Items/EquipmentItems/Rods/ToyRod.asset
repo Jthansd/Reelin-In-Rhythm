@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d1c6c6d9464a4ad49ab0c76f3d71f515, type: 3}
+  m_Name: ToyRod
+  m_EditorClassIdentifier: Assembly-CSharp::EquipmentItem
+  itemName: Toy Rod
+  itemDescription: Cute plastic toy rod made for kids
+  icon: {fileID: 21300000, guid: 0b26f88e4670f2e47a8bbbe41cfcb88b, type: 3}
+  itemID: 575516a6-54b6-45af-b0f4-26224b832514
+  value: 50
+  equipmentType: 0
+  effectType: 3
+  effectIntParam: 0
+  effectFloatParam: 0
+  effectRarityParam: 0
+  effectFishSizeParam: 0
+  unlockType: 1
+  requiredPreviousItem: {fileID: 11400000, guid: 4c109cb00dc8411498d37e1247cfe636, type: 2}
+  requiredObjectiveId: 
