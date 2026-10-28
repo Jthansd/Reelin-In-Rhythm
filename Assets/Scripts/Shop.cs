@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Shop : MonoBehaviour
+public class Shop : MonoBehaviour, IShop
 {
     [SerializeField] private GameObject shopDefaultUI;
     [SerializeField] private GameObject shopBrowseUI; // the single scroll view panel, shown for all 3 tabs

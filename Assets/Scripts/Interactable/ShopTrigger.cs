@@ -4,10 +4,21 @@ using UnityEngine;
 public class ShopTrigger : MonoBehaviour, IInteractable
 {
 
-    [SerializeField] private Shop shop;
+    [SerializeField] private MonoBehaviour shopScript;
+    private IShop shop;
+
+    private void Awake()
+    {
+        shop = shopScript as IShop;
+        if (shop == null)
+        {
+            Debug.LogError("The shopScript does not implement IShop interface.");
+        }
+    }
 
     public void OnPlayerEnter()
     {
+        Debug.Log("Player entered shop trigger");
         if (shop != null)
         {
             shop.OpenShop();

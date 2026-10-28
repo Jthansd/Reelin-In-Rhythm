@@ -61,10 +61,10 @@ public class EquipmentShopUI : ShopTabBase<EquipmentItem>
         ShopTooltipUI tooltipUI = toolTip.GetComponent<ShopTooltipUI>();
         tooltipUI.Initialize(canvasTransform);
 
-        TextMeshProUGUI descText = toolTip.transform.Find("DescriptionText").GetComponent<TMPro.TextMeshProUGUI>();
+        TextMeshProUGUI descText = toolTip.transform.Find("DescriptionText").GetComponent<TextMeshProUGUI>();
         TextMeshProUGUI nameText = toolTip.transform.Find("NameText").GetComponent<TextMeshProUGUI>();
         Transform affordabilityObj = toolTip.transform.Find("AffordabilityText");
-        TextMeshProUGUI affordabilityText = affordabilityObj.GetComponent<TMPro.TextMeshProUGUI>();
+        TextMeshProUGUI affordabilityText = affordabilityObj.GetComponent<TextMeshProUGUI>();
 
         if (locked)
         {
@@ -79,7 +79,7 @@ public class EquipmentShopUI : ShopTabBase<EquipmentItem>
             affordabilityObj.gameObject.SetActive(!canAfford);
             if (!canAfford)
             {
-                affordabilityObj.GetComponent<TMPro.TextMeshProUGUI>().text = "Can't afford this";
+                affordabilityObj.GetComponent<TextMeshProUGUI>().text = "Can't afford this";
             }
         }
 
@@ -109,7 +109,7 @@ public class EquipmentShopUI : ShopTabBase<EquipmentItem>
         tooltipUI.UpdatePosition(UnityEngine.InputSystem.Mouse.current.position.ReadValue());
     }
 
-private void CloseTooltip()
+    private void CloseTooltip()
     {
         if (spawnRoutine != null)
         {
