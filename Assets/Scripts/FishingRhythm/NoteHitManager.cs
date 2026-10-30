@@ -35,12 +35,14 @@ public class NoteHitManager : MonoBehaviour
     [SerializeField] private Color LateColor = Color.white;
     [SerializeField] private Color EarlyColor = Color.white;
     [SerializeField] private PlayerEquipment playerEquipment;
+    [SerializeField] private int comboCountThreshold = 5; //threshold to start showing combo count
 
+    private int comboCount = 0;
 
     public bool fishMeterFull;
     public bool perfect = true;
 
-    private void SpawnFeedback(string message, Color color)
+    private void SpawnFeedback(string message, Color color, bool isCombo = false)
     {
         GameObject popup = Instantiate(hitFeedbackPrefab, canvasTransform);
         RectTransform popupRect = popup.GetComponent<RectTransform>();
@@ -48,6 +50,17 @@ public class NoteHitManager : MonoBehaviour
 
         HitFeedbackPopup feedback = popup.GetComponent<HitFeedbackPopup>();
         feedback.Show(message, color);
+
+        if(isCombo)
+        {
+            GameObject comboPopup = Instantiate(hitFeedbackPrefab, canvasTransform);
+            HitFeedbackPopup comboFeedback = comboPopup.GetComponent<HitFeedbackPopup>();
+            
+            RectTransform comboRect = comboPopup.GetComponent<RectTransform>();
+            comboRect.anchoredPosition = feedbackAnchor.anchoredPosition + new Vector2(0, -90); // offset below the main feedback
+            string comboMessage = $"COMBO x {comboCount}!";
+            comboFeedback.Show(comboMessage, color);
+        }
     }
 
 
@@ -327,6 +340,7 @@ public class NoteHitManager : MonoBehaviour
         holdingNote = null;
         fishMeterFull = false;
         perfect = true;
+        comboCount = 0;
         foreach (var note in activeNotes)
             if (note != null) Destroy(note);
         activeNotes.Clear();
@@ -334,43 +348,56 @@ public class NoteHitManager : MonoBehaviour
 
     private void MissedNote(GameObject note, string message)
     {
-        if (note == null) return;
+        if (note == null) return; // no note
 
         bool wasAbsorbed = false;
 
-        if (!fishMeterFull)
+        if (!fishMeterFull) //fish meter full, cannot expand
         {
             fishMeterFull = reelWheel.UpdateFishDistance(false, out wasAbsorbed);
         }
 
-        if (!wasAbsorbed)
+        if (!wasAbsorbed) // miss prevention shield did not absorb the miss
         {
-            if (message == "EARLY")
-            {
-                SpawnFeedback(message, MissColor);
-            }
-            SpawnFeedback(message, MissColor);
+            SpawnFeedback(message, MissColor); 
         }
 
         perfect = false; // streak breaks regardless of shield
+        UpdateCombo(false); // reset combo count on miss
         UnregisterNote(note);
         Destroy(note);
     }
 
     private void HitNote(GameObject note)
     {
-        if (note == null) return;
-        SpawnFeedback("HIT!", HitColor);
-        if (!fishMeterFull)
+        if (note == null) return; // no note
+        SpawnFeedback("HIT!", HitColor, comboCount >= comboCountThreshold);
+        if (!fishMeterFull) //if the meter is not full
         {
-            fishMeterFull = reelWheel.UpdateFishDistance(true, out _);
+            fishMeterFull = reelWheel.UpdateFishDistance(true, out _); //reward for normal note hit
         }
         else
         {
             //reward for bonus note hit
             bonusReel.BonusHit();
         }
+        UpdateCombo(true); // update combo count on hit
         UnregisterNote(note);
         Destroy(note);
     }
+
+    private bool UpdateCombo(bool hit)
+    {
+        if (hit)
+        {
+            comboCount++; // Increase combo count
+        }
+        else
+        {
+            comboCount = 0; // Reset combo count
+        }
+
+        return comboCount >= comboCountThreshold; // Return true if combo count exceeds threshold
+    }
+
 }
