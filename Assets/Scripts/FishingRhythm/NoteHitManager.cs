@@ -7,7 +7,7 @@ using UnityEngine.Rendering.Universal;
 
 public class NoteHitManager : MonoBehaviour
 {
-    private List<NoteTiming> spawnTimes; 
+    private List<NoteTiming> spawnTimes;
     private int nextNoteIndex = 0;
     private float hitWindow = 15f;
     private List<GameObject> activeNotes = new List<GameObject>();
@@ -42,6 +42,8 @@ public class NoteHitManager : MonoBehaviour
     public bool fishMeterFull;
     public bool perfect = true;
 
+    private int totalHits = 0;
+
     private void SpawnFeedback(string message, Color color, bool isCombo = false)
     {
         GameObject popup = Instantiate(hitFeedbackPrefab, canvasTransform);
@@ -51,11 +53,11 @@ public class NoteHitManager : MonoBehaviour
         HitFeedbackPopup feedback = popup.GetComponent<HitFeedbackPopup>();
         feedback.Show(message, color);
 
-        if(isCombo)
+        if (isCombo)
         {
             GameObject comboPopup = Instantiate(hitFeedbackPrefab, canvasTransform);
             HitFeedbackPopup comboFeedback = comboPopup.GetComponent<HitFeedbackPopup>();
-            
+
             RectTransform comboRect = comboPopup.GetComponent<RectTransform>();
             comboRect.anchoredPosition = feedbackAnchor.anchoredPosition + new Vector2(0, -90); // offset below the main feedback
             string comboMessage = $"COMBO x {comboCount}!";
@@ -71,7 +73,7 @@ public class NoteHitManager : MonoBehaviour
 
     }
 
-    
+
 
     private float GetSpawnLeadTime()
     {
@@ -107,7 +109,7 @@ public class NoteHitManager : MonoBehaviour
     {
 
         spawnTimes = MusicController.Instance.GetNoteTimings();
-        
+
     }
 
     public void RegisterNote(GameObject note)
@@ -146,7 +148,7 @@ public class NoteHitManager : MonoBehaviour
                 CheckHoldInput(front, noteComp);
                 break;
             case NoteType.Altkey:
-            // Handle Altkey input if needed
+                // Handle Altkey input if needed
                 CheckTapInput(front);
                 break;
             case NoteType.Skip:
@@ -165,7 +167,7 @@ public class NoteHitManager : MonoBehaviour
         return activeNotes[0].GetComponent<ReelWheelNote>();
     }
 
-    
+
 
     public void CheckInput()
     {
@@ -183,7 +185,7 @@ public class NoteHitManager : MonoBehaviour
 
         }
 
-        if(IsTooLate(note))
+        if (IsTooLate(note))
         {
             Debug.Log("SKIP SUCCESS!");
             HitNote(note);
@@ -196,7 +198,7 @@ public class NoteHitManager : MonoBehaviour
         NoteType noteType = note.GetComponentInChildren<ReelWheelNote>().noteType;
         if (Keyboard.current.spaceKey.wasPressedThisFrame)
         {
-            if(noteType == NoteType.Altkey)
+            if (noteType == NoteType.Altkey)
             {
                 Debug.Log("Wrong Key!");
                 MissedNote(note, "MISS");
@@ -214,7 +216,7 @@ public class NoteHitManager : MonoBehaviour
                 {
                     MissedNote(note, "MISS");
                 }
-                
+
             }
             return;
 
@@ -276,13 +278,13 @@ public class NoteHitManager : MonoBehaviour
                 Debug.Log("MISSED HOLD (released early)");
                 MissedNote(note, "EARLY");
                 EndHold(note);
-                
+
             }
             else if (Time.time - holdStartTime >= noteComp.holdDuration)
             {
                 Debug.Log("HOLD SUCCESS");
                 HitNote(note);
-                EndHold(note);                
+                EndHold(note);
             }
         }
     }
@@ -341,6 +343,7 @@ public class NoteHitManager : MonoBehaviour
         fishMeterFull = false;
         perfect = true;
         comboCount = 0;
+        totalHits = 0;
         foreach (var note in activeNotes)
             if (note != null) Destroy(note);
         activeNotes.Clear();
@@ -359,7 +362,7 @@ public class NoteHitManager : MonoBehaviour
 
         if (!wasAbsorbed) // miss prevention shield did not absorb the miss
         {
-            SpawnFeedback(message, MissColor); 
+            SpawnFeedback(message, MissColor);
         }
 
         perfect = false; // streak breaks regardless of shield
@@ -382,6 +385,7 @@ public class NoteHitManager : MonoBehaviour
             bonusReel.BonusHit();
         }
         UpdateCombo(true); // update combo count on hit
+        totalHits++; // increment total hits
         UnregisterNote(note);
         Destroy(note);
     }
@@ -400,4 +404,13 @@ public class NoteHitManager : MonoBehaviour
         return comboCount >= comboCountThreshold; // Return true if combo count exceeds threshold
     }
 
+    public int GetTotalHits()
+    {
+        return totalHits;
+    }
+
+    public int GetComboCount()
+    {
+        return comboCount;
+    }
 }

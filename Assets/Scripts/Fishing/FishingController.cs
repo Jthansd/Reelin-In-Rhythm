@@ -38,7 +38,8 @@ public class FishingController : MonoBehaviour
     [SerializeField] private GameObject catchPopupPrefab;
     [SerializeField] private GameObject failPopupPrefab;
     [SerializeField] private RectTransform canvasTransform;
-    
+    [SerializeField] private ControlToggler controlToggler;
+    [SerializeField] private NoteHitManager noteHitManager;
 
     public FishingState CurrentState { get; private set; } = FishingState.Idle;
 
@@ -281,18 +282,40 @@ public class FishingController : MonoBehaviour
 
     private void ReeledIn()
     {
+        //What to do:
+        // Pause player controls 
+        // Throw the fish into the player's hand
+        // Add the fish to the player's inventory
+        // Pull up the catch popup with the fish's information
+        // Wait for the player to make an action to close the popup, or automatically close it after a few seconds
         Debug.Log("Fish reeled in!");
 
         CleanUpTackle();
         musicController.StopMusic();
-
         currentFish.sellPrice += fishingReward.AwardBonusCurrency(currentFish.species.BaseValue, bonusReel.GetBonusHits(), musicController.GetNoteCount());
+
+        //pause player movement
+
+        //controlToggler.FreezeControls();
+
+        // Throw the fish into the player's hand
+
+        // Add the fish to the player's inventory
 
         Debug.Log($"Adding {currentFish.species.ItemName}, of rarity {currentFish.rarity}, and of size {currentFish.fishSize} : {currentFish.size} to inventory.");
         playerInventory.AddCaughtFish(currentFish);
+
+        // Pull up the catch popup with the fish's information
+
+        SpawnCatchPopup(currentFish);
+
+        // Wait for the player to make an action to close the popup, or automatically close it after a few seconds
+
+
+
         OnFishCaught?.Invoke(currentFish);
         TutorialManager.Instance.ShowIfUnseen("First_Catch", "You caught your first fish! Check it out by pressing [E] to open your backpack.");
-        SpawnCatchPopup(currentFish);
+
     }
 
 
@@ -323,11 +346,15 @@ public class FishingController : MonoBehaviour
     {
         if (catchPopupPrefab == null || canvasTransform == null) return;
 
+        int totalHits = noteHitManager.GetTotalHits();
+        float hitRatio = (float) musicController.GetNoteCount() / totalHits;
+
+
         GameObject popup = Instantiate(catchPopupPrefab, canvasTransform);
         CatchResultPopup popupScript = popup.GetComponent<CatchResultPopup>();
         if (popupScript != null)
         {
-            popupScript.Show(fish);
+            popupScript.Show(fish, hitRatio);
         }
     }
 
