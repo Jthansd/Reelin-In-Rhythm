@@ -4,6 +4,8 @@ using UnityEngine;
 public class CurrencyUI : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI currencyText;
+    [SerializeField] private string prefix = "";
+    [SerializeField] private int paddedDigits = 0; // pads the amount with leading 0s up to this many digits - 0 means no padding
 
     private void Start()
     {
@@ -19,6 +21,6 @@ public class CurrencyUI : MonoBehaviour
 
     public void UpdateCurrencyUI()
     {
-        currencyText.text = CurrencyManager.Instance.GetCurrency().ToString();
+        currencyText.text = prefix + CurrencyManager.Instance.GetCurrency().ToString().PadLeft(paddedDigits, '0');
     }
 }

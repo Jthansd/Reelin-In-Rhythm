@@ -9,8 +9,8 @@ public class CatchResultPopup : MonoBehaviour, IPopup
     [SerializeField] private TextMeshProUGUI rarityText;
     [SerializeField] private Image cardBackground;
     [SerializeField] private float popDuration = 0.25f;
-    [SerializeField] private float displayDuration = 2f;
-    [SerializeField] private TextMeshProUGUI weightText;
+    [SerializeField] private float displayDuration = 5f;
+    [SerializeField] private TextMeshProUGUI sizeText;
     [SerializeField] private TextMeshProUGUI valueText;
     [SerializeField] private TextMeshProUGUI hitRatioText;
     [SerializeField] private ProgressBar hitRatioBar;
@@ -38,9 +38,9 @@ public class CatchResultPopup : MonoBehaviour, IPopup
             fishIcon.sprite = fish.species.Icon;
             nameText.text = fish.species.ItemName;
             rarityText.text = fish.rarity.ToString();
-            weightText.text = $"Weight: {fish.fishSize}";
+            sizeText.text = $"Size: {fish.fishSize}";
             valueText.text = $"Value: {fish.sellPrice}";
-            hitRatioText.text = $"{hitRatio * 100f}%";
+            hitRatioText.text = $"Notes Hit: {hitRatio * 100f}%";
             hitRatioBar.SetProgress(hitRatio);
         }
 

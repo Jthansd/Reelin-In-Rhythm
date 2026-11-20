@@ -28,7 +28,7 @@ public class ProgressBar : MonoBehaviour
 
     void Start()
     {
-        SetProgress(progress);
+        //SetProgress(progress);
     }
 
     void OnValidate()

@@ -347,7 +347,7 @@ public class FishingController : MonoBehaviour
         if (catchPopupPrefab == null || canvasTransform == null) return;
 
         int totalHits = noteHitManager.GetTotalHits();
-        float hitRatio = (float) musicController.GetNoteCount() / totalHits;
+        float hitRatio = totalHits / (float)musicController.GetNoteCount();
 
 
         GameObject popup = Instantiate(catchPopupPrefab, canvasTransform);
